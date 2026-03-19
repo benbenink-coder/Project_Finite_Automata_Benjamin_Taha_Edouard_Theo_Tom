@@ -4,7 +4,7 @@ test_truth_table = [
     ["X", "X"],
     [0, 4],
     ["X", "X"],
-] #expl taken from auto5, to test while we cannot load from file
+] #expl taken frocdm auto5, to test while we cannot load from file
 
 def read_txt(filename):
     with open(filename) as f:
@@ -68,4 +68,4 @@ print(test_truth_table)
 print(is_complete(test_truth_table))
 completion(test_truth_table)
 print(test_truth_table)
-read_txt("test_automata/auto20.txt")
+read_txt("test_automata/test_fa20.txt")
