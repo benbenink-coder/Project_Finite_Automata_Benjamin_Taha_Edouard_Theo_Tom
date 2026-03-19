@@ -20,14 +20,14 @@ def read_txt(filename):
         print("{} Final(s) state : {}".format(nbFinal, finalStates))  
         nbTransitions = f.read(1)
         print("Number of transitions : {}".format(nbTransitions))
-        truthTable = [["-" for i in range(int(nbSymbols))] for j in range(int(nbState))]
+        truthTable = [[[] for i in range(int(nbSymbols))] for j in range(int(nbState))]
 
         for x in f:
             stripped = x.strip()
             if stripped:  # Only process non-empty lines
                 print(ord(x[1]))
                 print(int(x[0]))
-                truthTable[int(x[0])][ord(x[1])-97] = int(x[2]) #truthTable[nodeA][transitionNumber(a = 0, z=26)] = nodeB
+                truthTable[int(x[0])][ord(x[1])-97].append(int(x[2]))  #truthTable[nodeA][transitionNumber(a = 0, z=26)] = nodeB
         
         ## NB : The code below was written using Gen AI, as it is only visual and requires no logic
 
@@ -68,4 +68,4 @@ print(test_truth_table)
 print(is_complete(test_truth_table))
 completion(test_truth_table)
 print(test_truth_table)
-read_txt("test_automata/test_fa20.txt")
+read_txt("test_automata/test_fa07.txt")
