@@ -28,9 +28,10 @@ def read_txt(filename):
                 print(ord(x[1]))
                 print(int(x[0]))
                 truthTable[int(x[0])][ord(x[1])-97].append(int(x[2]))  #truthTable[nodeA][transitionNumber(a = 0, z=26)] = nodeB
-        
-        ## NB : The code below was written using Gen AI, as it is only visual and requires no logic
+        return truthTable
 
+def printTruthTable(truthTable):
+        ## NB : The code below was written using Gen AI, as it is only visual and requires no logic
         print("\nTruth Table:")
         # Create header with column labels (a, b, c, ...)
         header = "State | " + " | ".join(f'{chr(97+j):>4}' for j in range(len(truthTable[0])))
@@ -39,7 +40,7 @@ def read_txt(filename):
         for i, row in enumerate(truthTable):
             print(f"{i:>5} | {' | '.join(f'{str(val):>4}' for val in row)}")
         print("-" * len(header))
-
+    
 
 alpha_size = 2 #size of the alphabet, will be read from file
 nb_states = 5 #number of states, will be read from file
@@ -68,4 +69,5 @@ print(test_truth_table)
 print(is_complete(test_truth_table))
 completion(test_truth_table)
 print(test_truth_table)
-read_txt("test_automata/test_fa07.txt")
+truthTable = read_txt("test_automata/test_fa07.txt")
+printTruthTable(truthTable)
