@@ -16,10 +16,10 @@ Lines 6 and the following lines: transitions in the form
 <source state><symbol><target state >
 ```
 
-And we'll store the data in Python in a Matrix (of size numberState*numberTransition).
+And we'll store the data in Python in a Matrix (of size numberState*numberSymbols).
 
 In the following manner : 
-array[nb of states][transition number (a=0,z=26)] 
+array[nb of states][symbolNumber(a=0,z=26)] 
 at the beginning we fill everything with Xs 
 to get the transition from 0 with d :
 arr[0][4] = next node.
