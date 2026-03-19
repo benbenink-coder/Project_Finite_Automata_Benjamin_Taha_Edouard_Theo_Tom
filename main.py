@@ -20,7 +20,7 @@ def read_txt(filename):
                 print(ord(x[1]))
                 print(int(x[0]))
                 truthTable[int(x[0])][ord(x[1])-97].append(int(x[2]))  #truthTable[nodeA][transitionNumber(a = 0, z=26)] = nodeB
-        return nbSymbols, nbState, initialStates, finalStates, truthTable
+        return int(nbSymbols), int(nbState), initialStates, finalStates, truthTable
     
 def printTruthTable(truthTable):
         ## NB : The code below was written using Gen AI, as it is only visual and requires no logic
@@ -36,30 +36,42 @@ def printTruthTable(truthTable):
 def is_complete(truthTable):
     is_comp = True
     for row in (truthTable):
-        if "-" in row:
-            is_comp = False
-            break
+        for trans in row:
+            if len(trans) == 0:
+                is_comp = False
+                break
+    print("* Complete : " + str(is_comp))
     return is_comp
 
 def completion(nbSymbols, nbState, truthTable):
     for i in range(nbState):
         for j in range(nbSymbols):
-            if truthTable[i][j] == "-":
-                truthTable[i][j] = -1 #-1 is sink state, on replace après
-    sink_state = [-1 for i in range(nbSymbols)]
+            if len(truthTable[i][j]) == 0:
+                truthTable[i][j] = [-1] #-1 is sink state, on replace après
+    sink_state = [[-1] for i in range(nbSymbols)]
     truthTable.append(sink_state)
+    print("Sucessfully completed FA !")
 
-
-def is_deterministic(nbSymbols, nbState, initialStates, truthTable):
+def is_deterministic(initialStates, truthTable):
+    is_det = True
     if len(initialStates) > 1:
-        return False
-    
-
-
+        is_det = False
+    else:   
+        for row in (truthTable):
+            for trans in row:
+                if len(trans) > 1:
+                    is_det = False
+                    break
+    print("* Determinstic : " + str(is_det))
+    return is_det
 
 
 nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt("test_automata/test_fa07.txt")
-print(is_complete(truthTable))
+printTruthTable(truthTable)
+
+is_complete(truthTable)
 completion(nbSymbols, nbState, truthTable)
-print(is_complete(truthTable))
-print(truthTable)
+is_complete(truthTable)
+printTruthTable(truthTable)
+
+is_deterministic(initialStates, truthTable)
