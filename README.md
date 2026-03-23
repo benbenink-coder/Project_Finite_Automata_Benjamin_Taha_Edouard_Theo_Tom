@@ -26,3 +26,29 @@ arr[0][4] = next node.
 
 To translate a into a number, we'll use the ascii table.
 
+## Minimization
+
+We also implemented the minimization of a finite automaton.
+
+This operation is applied on a complete deterministic finite automaton (CDFA), in order to obtain an equivalent automaton with the smallest possible number of states (MCDFA).
+
+The method used is based on partitioning the states:
+
+Firstly, we separate the states into two groups:
+- final states
+- non-final states
+
+Then, we refine these groups by comparing their transitions:
+states are grouped together if they behave the same way for all symbols.
+
+This process is repeated until no more changes occur in the partition.
+
+Finally, we build the minimal automaton:
+- each group becomes a new state
+- transitions are defined between these new states
+- initial and final states are updated accordingly
+
+The program also displays:
+- the successive partitions
+- the transitions between groups
+- the correspondence between the new states and the original states
