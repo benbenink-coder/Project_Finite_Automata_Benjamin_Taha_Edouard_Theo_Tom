@@ -33,6 +33,8 @@ def printTruthTable(truthTable):
             print(f"{i:>5} | {' | '.join(f'{str(val):>4}' for val in row)}")
         print("-" * len(header))
 
+# COMPLETION PART
+
 def is_complete(truthTable):
     is_comp = True
     for row in (truthTable):
@@ -47,10 +49,12 @@ def completion(nbSymbols, nbState, truthTable):
     for i in range(nbState):
         for j in range(nbSymbols):
             if len(truthTable[i][j]) == 0:
-                truthTable[i][j] = [-1] #-1 is sink state, on replace après
-    sink_state = [[-1] for i in range(nbSymbols)]
+                truthTable[i][j] = [nbState]
+    sink_state = [[nbState] for i in range(nbSymbols)]
     truthTable.append(sink_state)
     print("Sucessfully completed FA !")
+
+# DETERMINIZATION PART
 
 def is_deterministic(initialStates, truthTable):
     is_det = True
@@ -62,9 +66,46 @@ def is_deterministic(initialStates, truthTable):
                 if len(trans) > 1:
                     is_det = False
                     break
-    print("* Determinstic : " + str(is_det))
+    print("* Deterministic : " + str(is_det))
     return is_det
+
+def sls(arr):
+    return sorted(list(set(arr)))
+
+def determinize(nbSymbols, nbState, initialStates, finalStates, truthTable):
+    newTruthTable = []
+    toDo = []
+    fakeStatesToIndices = {}
     
+    toDo.append(sls(initialStates))
+
+
+    indice = 0
+    while (len(toDo)) > 0:
+        stateName, stateRow = merge_states(toDo[0], truthTable, nbSymbols, toDo, fakeStatesToIndices)
+        newTruthTable.append(stateRow)
+        fakeStatesToIndices[stateName] = indice
+        del toDo[0]
+        indice +=1
+    print(fakeStatesToIndices)
+    printTruthTable(newTruthTable)
+
+
+def merge_states(statesToMerge, truthTable, nbSymbols, toDo, fakeStatesToIndices):
+    stateName = "".join(str(s) for s in statesToMerge)
+    stateRow = [[] for i in range(int(nbSymbols))]
+    for i in range(int(nbSymbols)):
+        trans = [] 
+        for j in statesToMerge:
+            trans.extend(truthTable[int(j)][i])
+        print(trans)
+        trans = sls(trans) #remove duplicates and sort it asc so [2,1,3] and [3,2,1] etc.. are considered same
+        stateRow[i] = "".join(str(s) for s in trans)
+        if trans not in toDo and stateRow[i] not in fakeStatesToIndices.keys():
+            toDo.append(trans)
+    return stateName, stateRow
+
+
 #MINIMIZATION PART
 def normalize_truthTable_for_cdfa(truthTable):
     # Convert temporary sink (-1) into real sink index and enforce determinism
@@ -279,6 +320,21 @@ def display_minimal_automaton(MCDFA):
 
 nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt("test_automata/test_fa07.txt")
 printTruthTable(truthTable)
+
+print("*************************")
+anbSymbols = 2
+anbState = 5
+ainitialStates = [0]
+afinalStates = [4]
+atruthTable = [
+    [[0,1], [0]],
+    [[], [2]],
+    [[3], []],
+    [[4], []],
+    [[], []],
+]
+determinize(anbSymbols, anbState, ainitialStates, afinalStates, atruthTable)
+print("*************************")
 
 is_complete(truthTable)
 completion(nbSymbols, nbState, truthTable)
