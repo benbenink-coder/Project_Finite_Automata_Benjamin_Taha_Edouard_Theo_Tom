@@ -33,6 +33,36 @@ def printTruthTable(truthTable):
             print(f"{i:>5} | {' | '.join(f'{str(val):>4}' for val in row)}")
         print("-" * len(header))
 
+def is_standard(truthTable, initialStates):
+    if len(initialStates) >1:
+        return False
+    for state in truthTable:
+        for word in state:
+            for target in word:
+                if target == initialStates[0]:
+                    return False
+    return True
+
+def standardization(truthTable, initialStates):
+    initial = [[] for i in range(len(truthTable[0]))]
+    for i_state in initialStates:
+        for i in range(len(truthTable[int(i_state)])):
+            for j in range(len(truthTable[int(i_state)][i])):
+                initial[i].append(truthTable[int(i_state)][i][j])
+    truthTable.append(initial)
+    initialStates = str(len(truthTable)-1)
+    return truthTable, initialStates
+
+def standardization_on_demand(truthTable, initialStates):
+    if not is_standard(truthTable, initialStates):
+        print("Do you want to standardize? Type 'yes' or 'no':")
+        if input().lower() == "yes":
+            truthTable, initialStates = standardization(truthTable, initialStates)
+            printTruthTable(truthTable)
+            return truthTable, initialStates
+    print("The automata is already standardized!")
+    return truthTable
+
 # COMPLETION PART
 
 def is_complete(truthTable):
@@ -317,9 +347,14 @@ def display_minimal_automaton(MCDFA):
 
     printTruthTable(truthTable)
 
+nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt("test_automata/test_fa05.txt")
+printTruthTable(truthTable)
+truthTable, initialStates = standardization_on_demand(truthTable,initialStates)
+print(initialStates)
 
 nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt("test_automata/test_fa07.txt")
 printTruthTable(truthTable)
+truthTable, initialStates = standardization_on_demand(truthTable,initialStates)
 
 print("*************************")
 anbSymbols = 2
