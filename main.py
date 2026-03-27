@@ -1,3 +1,7 @@
+import os
+import time
+
+
 def read_txt(filename):
     with open(filename) as f:
         nbSymbols = f.readline()
@@ -17,8 +21,6 @@ def read_txt(filename):
         for x in f:
             stripped = x.strip()
             if stripped:  # Only process non-empty lines
-                print(ord(x[1]))
-                print(int(x[0]))
                 truthTable[int(x[0])][ord(x[1])-97].append(int(x[2]))  #truthTable[nodeA][transitionNumber(a = 0, z=26)] = nodeB
         return int(nbSymbols), int(nbState), initialStates, finalStates, truthTable
     
@@ -347,47 +349,46 @@ def display_minimal_automaton(MCDFA):
 
     printTruthTable(truthTable)
 
-nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt("test_automata/test_fa05.txt")
-printTruthTable(truthTable)
-truthTable, initialStates = standardization_on_demand(truthTable,initialStates)
-print(initialStates)
+# nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt("test_automata/test_fa05.txt")
+# printTruthTable(truthTable)
+# truthTable, initialStates = standardization_on_demand(truthTable,initialStates)
+# print(initialStates)
 
-nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt("test_automata/test_fa07.txt")
-printTruthTable(truthTable)
-truthTable, initialStates = standardization_on_demand(truthTable,initialStates)
+# nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt("test_automata/test_fa07.txt")
+# printTruthTable(truthTable)
+# truthTable, initialStates = standardization_on_demand(truthTable,initialStates)
 
-print("*************************")
-anbSymbols = 2
-anbState = 5
-ainitialStates = [0]
-afinalStates = [4]
-atruthTable = [
-    [[0,1], [0]],
-    [[], [2]],
-    [[3], []],
-    [[4], []],
-    [[], []],
-]
-determinize(anbSymbols, anbState, ainitialStates, afinalStates, atruthTable)
-print("*************************")
+# print("*************************")
+# anbSymbols = 2
+# anbState = 5
+# ainitialStates = [0]
+# afinalStates = [4]
+# atruthTable = [
+#     [[0,1], [0]],
+#     [[], [2]],
+#     [[3], []],
+#     [[4], []],
+#     [[], []],
+# ]
+# determinize(anbSymbols, anbState, ainitialStates, afinalStates, atruthTable)
+# print("*************************")
 
-is_complete(truthTable)
-completion(nbSymbols, nbState, truthTable)
-is_complete(truthTable)
-printTruthTable(truthTable)
-
-
-if is_deterministic(initialStates, truthTable):
-    MCDFA = minimization(nbSymbols, len(truthTable), initialStates, finalStates, truthTable)
-    display_minimal_automaton(MCDFA)
-else:
-    print("Cannot minimize: automaton is not deterministic.")
+# is_complete(truthTable)
+# completion(nbSymbols, nbState, truthTable)
+# is_complete(truthTable)
+# printTruthTable(truthTable)
 
 
+# if is_deterministic(initialStates, truthTable):
+#     MCDFA = minimization(nbSymbols, len(truthTable), initialStates, finalStates, truthTable)
+#     display_minimal_automaton(MCDFA)
+# else:
+#     print("Cannot minimize: automaton is not deterministic.")
 
-def recognize_word(word, A):
-    # Read the automaton from file A
-    nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt(A)
+
+
+def recognize_word(word, nbSymbols, nbState, initialStates, finalStates, truthTable):
+#i removed the automaton reading to pass it as parameter, saving memory and being more efficient
 
     # Store all possible current states
     # This is needed because the automaton can be non-deterministic
@@ -431,14 +432,14 @@ def recognize_word(word, A):
     return False
 
 
-def read_word(A):
+def read_word(nbSymbols, nbState, initialStates, finalStates, truthTable):
     # Ask the user to type a full word
     word = input("Type a word to test (or 'end' to stop): ")
 
     # Repeat until the user types "end"
     while word != "end":
         # Test if the automaton recognizes the word
-        if recognize_word(word, A):
+        if recognize_word(word, nbSymbols, nbState, initialStates, finalStates, truthTable):
             print("Yes")
         else:
             print("No")
@@ -446,4 +447,36 @@ def read_word(A):
         # Ask for another word
         word = input("Type a word to test (or 'end' to stop): ")
 
+
+def menu():
+    print("Welcome to our Finite Automata Software. (press ctrl+c to quit)")
+    time.sleep(1)
+    automataList = os.listdir("test_automata")
+    automataList.sort()
+    while True:
+        print("Below is the list of all automatas in the 'test_automata' directory" )
+        for i in range(len(automataList)):
+            print("{}.".format(i+1), automataList[i])
+            time.sleep(0.01)
+        choice = int(input("Input your choice (n° of the automata)\n\n"))
+        print("You selected automaton : {}".format(automataList[choice-1]))
+        nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt("test_automata/"+automataList[choice-1])
+        print("Below is the truth table of automaton {}".format(automataList[choice-1]))
+        printTruthTable(truthTable)
+        while True:
+            print("Here are the operation you can apply on the automaton : \n 1. Standardize \n 2. Determinize \n 3. Complete \n 4. Minimize \n 5. Read Word")
+            opChoice = int(input("Give the operation number you want to apply : "))
+            match opChoice:
+                case 1:
+                    standardization(truthTable, initialStates)
+                case 2: 
+                    determinize(nbSymbols, nbState, initialStates, finalStates, truthTable)
+                case 3:
+                    completion(nbSymbols, nbState, truthTable)
+                case 4:
+                    minimization(nbSymbols, nbState, initialStates, finalStates, truthTable)
+                case 5:
+                    read_word(nbSymbols, nbState, initialStates, finalStates, truthTable)
+
+menu()
 read_word("test_automata/test_fa07.txt")
