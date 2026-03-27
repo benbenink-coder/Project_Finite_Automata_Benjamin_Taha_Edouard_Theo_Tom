@@ -140,10 +140,22 @@ def determinize(nbSymbols, nbState, initialStates, finalStates, truthTable):
         fakeStatesToIndices[stateName] = indice
         del toDo[0]
         indice +=1
-    print(newInitialStates)
-    print(newFinalStates)
     print(fakeStatesToIndices)
-    printTruthTable(newTruthTable)
+
+    for i in range(len(newInitialStates)):
+        newInitialStates[i] = str(fakeStatesToIndices[newInitialStates[i]])
+    
+    for i in range(len(newFinalStates)):
+        newFinalStates[i] = str(fakeStatesToIndices[newFinalStates[i]])
+
+    for i in range(nbState):
+        for j in range(nbSymbols):
+            newTruthTable[i][j] = str(fakeStatesToIndices[newTruthTable[i][j]])
+
+    printTruthTable(newTruthTable, newInitialStates, newFinalStates)
+    truthTable = newTruthTable
+    initialStates = newInitialStates
+    finalStates = newFinalStates
 
 
 def merge_states(statesToMerge, truthTable, nbSymbols, toDo, fakeStatesToIndices, initialStates, finalStates, newInitialStates, newFinalStates):
