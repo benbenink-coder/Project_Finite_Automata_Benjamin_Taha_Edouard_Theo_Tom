@@ -79,8 +79,10 @@ def standardization_on_demand(truthTable, initialStates):
             truthTable, initialStates = standardization(truthTable, initialStates)
             printTruthTable(truthTable)
             return truthTable, initialStates
+        else:
+            return truthTable, initialStates
     print("The automata is already standardized!")
-    return truthTable
+    return truthTable, initialStates
 
 # COMPLETION PART
 
