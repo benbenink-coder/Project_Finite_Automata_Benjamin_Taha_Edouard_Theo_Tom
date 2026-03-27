@@ -14,26 +14,43 @@ def read_txt(filename):
         finalStates = f.readline().strip().split(" ")
         print("{} Initial(s) state : {}".format(nbInitial, initialStates))  
         print("{} Final(s) state : {}".format(nbFinal, finalStates))  
-        nbTransitions = f.read(1)
+        nbTransitions = f.readline() 
         print("Number of transitions : {}".format(nbTransitions))
-        truthTable = [[[] for i in range(int(nbSymbols))] for j in range(int(nbState))]
+        truthTable = [[[] for i in range(int(nbSymbols)+1)] for j in range(int(nbState))] ##last column is always *
 
         for x in f:
+            print(x)
             stripped = x.strip()
             if stripped:  # Only process non-empty lines
-                truthTable[int(x[0])][ord(x[1])-97].append(int(x[2]))  #truthTable[nodeA][transitionNumber(a = 0, z=26)] = nodeB
+       
+                if x[1] == "*":
+                    truthTable[int(x[0])][-1].append(int(x[2]))
+                else:   
+  
+                  truthTable[int(x[0])][ord(x[1])-97].append(int(x[2]))  #truthTable[nodeA][transitionNumber(a = 0, z=26)] = nodeB
         return int(nbSymbols), int(nbState), initialStates, finalStates, truthTable
     
-def printTruthTable(truthTable):
-        ## NB : The code below was written using Gen AI, as it is only visual and requires no logic
-        print("\nTruth Table:")
-        # Create header with column labels (a, b, c, ...)
-        header = "State | " + " | ".join(f'{chr(97+j):>4}' for j in range(len(truthTable[0])))
-        print(header)
-        print("-" * len(header))
-        for i, row in enumerate(truthTable):
-            print(f"{i:>5} | {' | '.join(f'{str(val):>4}' for val in row)}")
-        print("-" * len(header))
+def printTruthTable(truthTable, initialStates, finalStates):
+    ## NB : The code below was written using Gen AI, as it is only visual and requires no logic
+    print("\nTruth Table:")
+    # Create header with column labels (a, b, c, ..., *)
+    header = "    | State | " + " | ".join(f'{chr(97+j):>4}' for j in range(len(truthTable[0])-1)) + " | " + f"{'*':>4}"
+    print(header)
+    print("-" * len(header))
+    for i, row in enumerate(truthTable):
+        # Determine markers for initial and final states
+        marker = ""
+        if str(i) in initialStates:
+            marker += "->"
+        else:
+            marker += "  "
+        if str(i) in finalStates:
+            marker += "<-"
+        else:
+            marker += "  "
+        
+        print(f"{marker} | {i:>5} | {' | '.join(f'{str(val):>4}' for val in row)}")
+    print("-" * len(header))
 
 def is_standard(truthTable, initialStates):
     if len(initialStates) >1:
@@ -62,8 +79,10 @@ def standardization_on_demand(truthTable, initialStates):
             truthTable, initialStates = standardization(truthTable, initialStates)
             printTruthTable(truthTable)
             return truthTable, initialStates
+        else:
+            return truthTable, initialStates
     print("The automata is already standardized!")
-    return truthTable
+    return truthTable, initialStates
 
 # COMPLETION PART
 
@@ -473,7 +492,7 @@ def menu():
         print("You selected automaton : {}".format(automataList[choice-1]))
         nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt("test_automata/"+automataList[choice-1])
         print("Below is the truth table of automaton {}".format(automataList[choice-1]))
-        printTruthTable(truthTable)
+        printTruthTable(truthTable, initialStates, finalStates)
         while True:
             print("Here are the operation you can apply on the automaton : \n 1. Standardize \n 2. Determinize \n 3. Complete \n 4. Minimize \n 5. Read Word")
             opChoice = int(input("Give the operation number you want to apply : "))
