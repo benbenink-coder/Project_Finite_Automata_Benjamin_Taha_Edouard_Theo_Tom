@@ -97,12 +97,15 @@ def is_complete(truthTable):
     return is_comp
 
 def completion(nbSymbols, nbState, truthTable):
+    needSink = False
     for i in range(nbState):
         for j in range(nbSymbols):
             if len(truthTable[i][j]) == 0:
                 truthTable[i][j] = [nbState]
-    sink_state = [[nbState] for i in range(nbSymbols)]
-    truthTable.append(sink_state)
+                needSink = True
+    if needSink:
+        sink_state = [[nbState] for i in range(nbSymbols)]
+        truthTable.append(sink_state)
     print("Sucessfully completed FA !")
 
 # DETERMINIZATION PART
@@ -128,7 +131,7 @@ def determinize(nbSymbols, nbState, initialStates, finalStates, truthTable):
     toDo = []
     fakeStatesToIndices = {}
 
-    newInitialStates = []
+    newInitialStates = [".".join(str(s) for s in sls(initialStates))]
     newFinalStates = []
     
     toDo.append(sls(initialStates))
@@ -148,24 +151,21 @@ def determinize(nbSymbols, nbState, initialStates, finalStates, truthTable):
     for i in range(len(newFinalStates)):
         newFinalStates[i] = str(fakeStatesToIndices[newFinalStates[i]])
 
-    for i in range(nbState):
+    for i in range(len(newTruthTable)):
         for j in range(nbSymbols):
             newTruthTable[i][j] = str(fakeStatesToIndices[newTruthTable[i][j]])
 
     printTruthTable(newTruthTable, newInitialStates, newFinalStates)
+
     truthTable = newTruthTable
     initialStates = newInitialStates
     finalStates = newFinalStates
 
 
 def merge_states(statesToMerge, truthTable, nbSymbols, toDo, fakeStatesToIndices, initialStates, finalStates, newInitialStates, newFinalStates):
-    stateName = "".join(str(s) for s in statesToMerge)
-    if (all(str(e) in initialStates for e in statesToMerge)):
-        print("initial")
-        newInitialStates.append(stateName)
+    stateName = ".".join(str(s) for s in statesToMerge)
 
     if (any(str(e) in finalStates for e in statesToMerge)):
-        print("final")
         newFinalStates.append(stateName)
 
     stateRow = [[] for i in range(int(nbSymbols))]
@@ -174,7 +174,7 @@ def merge_states(statesToMerge, truthTable, nbSymbols, toDo, fakeStatesToIndices
         for j in statesToMerge:
             trans.extend(truthTable[int(j)][i])
         trans = sls(trans) #remove duplicates and sort it asc so [2,1,3] and [3,2,1] etc.. are considered same
-        stateRow[i] = "".join(str(s) for s in trans)
+        stateRow[i] = ".".join(str(s) for s in trans)
         if trans not in toDo and stateRow[i] not in fakeStatesToIndices.keys():
             toDo.append(trans)
     return stateName, stateRow
