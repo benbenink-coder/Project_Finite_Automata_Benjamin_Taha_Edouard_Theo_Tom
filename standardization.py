@@ -37,6 +37,6 @@ def standardization_on_demand(truthTable, initialStates, finalStates):
     if not is_standard(truthTable, initialStates): #Check if the automaton is standardized
             truthTable, initialStates = standardization(truthTable, initialStates)
             printTruthTable(truthTable, initialStates, finalStates) #Print the updated truth table
-            return truthTable, initialStates, 1
+            return truthTable, initialStates
     print("The automata is already standardized!")
-    return truthTable, initialStates, 0
+    return truthTable, initialStates
