@@ -1,5 +1,6 @@
 import os
 import time
+import re
 
 
 def read_txt(filename):
@@ -17,17 +18,20 @@ def read_txt(filename):
         nbTransitions = f.readline() 
         print("Number of transitions : {}".format(nbTransitions))
         truthTable = [[[] for i in range(int(nbSymbols)+1)] for j in range(int(nbState))] ##last column is always *
-
         for x in f:
             print(x)
             stripped = x.strip()
             if stripped:  # Only process non-empty lines
-       
-                if x[1] == "*":
-                    truthTable[int(x[0])][-1].append(int(x[2]))
-                else:   
-  
-                  truthTable[int(x[0])][ord(x[1])-97].append(int(x[2]))  #truthTable[nodeA][transitionNumber(a = 0, z=26)] = nodeB
+                match = re.search(r"(\d+)([\*a-z])(\d+)", x) #This uses regular expressions to read the strings of transitions (as we could have 111111*222222 and we would still want our programm to work)
+                if match:
+                    first_num = match.group(1)
+                    separator = match.group(2)
+                    second_num = match.group(3)
+                if separator == "*":
+                    truthTable[int(first_num)][-1].append(int(second_num))
+                else:
+                    print(x[0], x[1], x[2])
+                    truthTable[int(first_num)][ord(separator)-97].append(int(second_num))  #truthTable[nodeA][transitionNumber(a = 0, z=26)] = nodeB
         return int(nbSymbols), int(nbState), initialStates, finalStates, truthTable
     
 def printTruthTable(truthTable, initialStates, finalStates):
@@ -497,19 +501,30 @@ def menu():
         print("Below is the truth table of automaton {}".format(automataList[choice-1]))
         printTruthTable(truthTable, initialStates, finalStates)
         while True:
-            print("Here are the operation you can apply on the automaton : \n 1. Standardize \n 2. Determinize \n 3. Complete \n 4. Minimize \n 5. Read Word")
+            print("Here are the operation you can apply on the automaton : \n 1. Standardize \n 2. Determinize \n 3. Complete \n 4. Minimize \n 5. Read Word \n 6. Select another automaton")
             opChoice = int(input("Give the operation number you want to apply : "))
             match opChoice:
                 case 1:
-                    standardization(truthTable, initialStates)
+                    standardization_on_demand(truthTable, initialStates)
                 case 2: 
                     determinize(nbSymbols, nbState, initialStates, finalStates, truthTable)
                 case 3:
+                    is_complete(truthTable)
                     completion(nbSymbols, nbState, truthTable)
+                    is_complete(truthTable)
+                    printTruthTable(truthTable, initialStates, finalStates)
                 case 4:
-                    minimization(nbSymbols, nbState, initialStates, finalStates, truthTable)
+                    if is_deterministic(initialStates, truthTable):
+                        MCDFA = minimization(nbSymbols, len(truthTable), initialStates, finalStates, truthTable)
+                        display_minimal_automaton(MCDFA)
+                    else:
+                        print("Cannot minimize: automaton is not deterministic.")
                 case 5:
                     read_word(nbSymbols, nbState, initialStates, finalStates, truthTable)
+                case 6:
+                    break
 
 menu()
 read_word("test_automata/test_fa07.txt")
+
+#32; 33
