@@ -1,3 +1,5 @@
+from read import *
+
 def recognize_word(word, nbSymbols, nbState, initialStates, finalStates, truthTable):
 #i removed the automaton reading to pass it as parameter, saving memory and being more efficient
 
@@ -57,3 +59,62 @@ def read_word(nbSymbols, nbState, initialStates, finalStates, truthTable):
 
         # Ask for another word
         word = input("Type a word to test (or 'end' to stop): ")
+
+
+
+
+def complementary_automaton(A):
+    # Read the automaton from file A
+    nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt(A)
+
+    # Build the new final states:
+    # all non-final states become final
+    compFinalStates = []
+
+    for state in range(nbState):
+        if str(state) not in finalStates:
+            compFinalStates.append(str(state))
+
+    # Return the complementary automaton
+    return nbSymbols, nbState, initialStates, compFinalStates, truthTable
+
+
+def recognize_word_comp(word, A):
+    # Read the complementary automaton
+    nbSymbols, nbState, initialStates, finalStates, truthTable = complementary_automaton(A)
+
+    # Start at the initial state
+    current_state = int(initialStates[0])
+
+    # Read the word letter by letter
+    for letter in word:
+        # Convert a letter into a column number
+        column = ord(letter) - 97
+
+        # If the letter is not in the alphabet, reject
+        if column < 0 or column >= nbSymbols:
+            return False
+
+        # If no transition exists, reject
+        if len(truthTable[current_state][column]) == 0:
+            return False
+
+        # Move to the next state
+        current_state = truthTable[current_state][column][0]
+
+    # At the end, check if the state is final in the complementary automaton
+    return str(current_state) in finalStates
+
+
+def read_word_comp(A):
+    print("The complementary automaton is built from A.")
+
+    word = input("Type a word to test on the complementary automaton (or 'end' to stop): ")
+
+    while word != "end":
+        if recognize_word_comp(word, A):
+            print("Yes")
+        else:
+            print("No")
+
+        word = input("Type a word to test on the complementary automaton (or 'end' to stop): ")
