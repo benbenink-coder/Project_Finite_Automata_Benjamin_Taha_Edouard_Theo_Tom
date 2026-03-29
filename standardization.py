@@ -6,7 +6,7 @@ def is_standard(truthTable, initialStates):
     for state in truthTable:
         for word in state:
             for target in word:
-                if target == initialStates[0]:
+                if str(target) == initialStates[0]:
                     return False
     return True
 
@@ -15,7 +15,8 @@ def standardization(truthTable, initialStates):
     for i_state in initialStates:
         for i in range(len(truthTable[int(i_state)])):
             for j in range(len(truthTable[int(i_state)][i])):
-                initial[i].append(truthTable[int(i_state)][i][j])
+                if truthTable[int(i_state)][i][j] not in initial[i]:
+                    initial[i].append(truthTable[int(i_state)][i][j])
     truthTable.append(initial)
     initialStates = str(len(truthTable)-1)
     return truthTable, initialStates
