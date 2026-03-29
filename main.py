@@ -100,8 +100,8 @@ def menu():
                     read_word(nbSymbols, nbState, initialStates, finalStates, truthTable)
                     r_comp = input("Do you want to check if it can be read for the complementary ? (y/n)")
                     if r_comp == "y":
-                        compNbSymbols, compNbState, compInitialStates, compFinalStates, compTruthTable = complementary_automaton(nbSymbols, nbState, initialStates, finalStates, truthTable)
-                        read_word_comp(compNbSymbols, compNbState, compInitialStates, compFinalStates, compTruthTable)
+                        nbSymbols, nbState, initialStates, compFinalStates, truthTable = complementary_automaton(nbSymbols, nbState, initialStates, finalStates, truthTable)
+                        read_word_comp(nbSymbols, nbState, initialStates, compFinalStates, truthTable)
                 case 6:
                     break
 
