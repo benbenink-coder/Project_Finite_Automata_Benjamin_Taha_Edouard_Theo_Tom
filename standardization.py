@@ -6,7 +6,7 @@ def is_standard(truthTable, initialStates):
     for state in truthTable:
         for word in state:
             for target in word:
-                if target == initialStates[0]:
+                if str(target) == initialStates[0]:
                     return False
     return True
 
