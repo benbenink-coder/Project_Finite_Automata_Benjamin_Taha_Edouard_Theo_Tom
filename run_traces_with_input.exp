@@ -1,0 +1,52 @@
+#!/usr/bin/expect -f
+
+# Do NOT limit the output log size
+match_max 100000
+
+set timeout 2
+
+# We'll run this expect script inside a bash loop
+set fa_num [lindex $argv 0]
+set num [format "%02d" $fa_num]
+
+# Start logging to the trace file
+log_file "traces/trace_fa$num.txt"
+
+# Start the python script
+spawn python3 main.py
+
+# We expect the menu to ask for the automata number
+expect "Input your choice"
+send "$fa_num\r"
+
+# Menu -> 1 (Standardize)
+expect "Give the operation number:"
+send "1\r"
+
+# Menu -> 2 (Determinize)
+expect "Give the operation number:"
+send "2\r"
+
+# Menu -> 3 (Complete)
+expect "Give the operation number:"
+send "3\r"
+
+# Menu -> 4 (Minimize)
+expect "Give the operation number:"
+send "4\r"
+
+# Menu -> 5 (Read Word)
+expect "Give the operation number:"
+send "5\r"
+
+expect "Type a word to test"
+send "aba\r"
+
+expect "Type a word to test"
+send "end\r"
+
+# Menu -> 6 (Select another) -> EOF
+expect "Give the operation number:"
+send "6\r"
+
+expect eof

@@ -1,0 +1,267 @@
+spawn python3 main.py
+Welcome to our Finite Automata Software. (press ctrl+c to quit)
+Below is the list of all automatas in the 'test_automata' directory
+1. test_fa01.txt
+2. test_fa02.txt
+41
+3. test_fa03.txt
+4. test_fa04.txt
+5. test_fa05.txt
+6. test_fa06.txt
+7. test_fa07.txt
+8. test_fa08.txt
+9. test_fa09.txt
+10. test_fa10.txt
+11. test_fa11.txt
+12. test_fa12.txt
+13. test_fa13.txt
+14. test_fa14.txt
+15. test_fa15.txt
+16. test_fa16.txt
+17. test_fa17.txt
+18. test_fa18.txt
+19. test_fa19.txt
+20. test_fa20.txt
+21. test_fa21.txt
+22. test_fa22.txt
+23. test_fa23.txt
+24. test_fa24.txt
+25. test_fa25.txt
+26. test_fa26.txt
+27. test_fa27.txt
+28. test_fa28.txt
+29. test_fa29.txt
+30. test_fa30.txt
+31. test_fa31.txt
+32. test_fa32.txt
+33. test_fa33.txt
+34. test_fa34.txt
+35. test_fa35.txt
+36. test_fa36.txt
+37. test_fa37.txt
+38. test_fa38.txt
+39. test_fa39.txt
+40. test_fa40.txt
+41. test_fa41.txt
+42. test_fa42.txt
+43. test_fa43.txt
+44. test_fa44.txt
+Input your choice (n° of the automata)
+
+You selected automaton : test_fa41.txt
+Nb of symbols : 2
+
+Nb of States : 6
+
+1 Initial(s) state : ['0']
+4 Final(s) state : ['1', '2', '3', '4']
+Number of transitions : 12
+
+0a1
+
+0 a 1
+0b4
+
+0 b 4
+1a2
+
+1 a 2
+1b3
+
+1 b 3
+2a2
+
+2 a 2
+2b3
+
+2 b 3
+3a5
+
+3 a 5
+3b5
+
+3 b 5
+4a5
+
+4 a 5
+4b5
+
+4 b 5
+5a5
+
+5 a 5
+5b5
+
+5 b 5
+Below is the truth table of automaton test_fa41.txt
+
+Truth Table:
+    | State |    a |    b |    *
+--------------------------------
+->   |     0 |  [1] |  [4] |   []
+  <- |     1 |  [2] |  [3] |   []
+  <- |     2 |  [2] |  [3] |   []
+  <- |     3 |  [5] |  [5] |   []
+  <- |     4 |  [5] |  [5] |   []
+     |     5 |  [5] |  [5] |   []
+--------------------------------
+
+1. Standardize
+2. Determinize
+3. Complete
+4. Minimize
+5. Read Word
+6. Select another
+Give the operation number: 1
+The automata is already standardized!
+
+1. Standardize
+2. Determinize
+3. Complete
+4. Minimize
+5. Read Word
+6. Select another
+Give the operation number: 2
+* Deterministic : True
+automaton already deterministic
+
+1. Standardize
+2. Determinize
+3. Complete
+4. Minimize
+5. Read Word
+6. Select another
+Give the operation number: 3
+* Complete : True
+Sucessfully completed FA !
+* Complete : True
+
+Truth Table:
+    | State |    a |    b |    *
+--------------------------------
+->   |     0 |  [1] |  [4] |   []
+  <- |     1 |  [2] |  [3] |   []
+  <- |     2 |  [2] |  [3] |   []
+  <- |     3 |  [5] |  [5] |   []
+  <- |     4 |  [5] |  [5] |   []
+     |     5 |  [5] |  [5] |   []
+--------------------------------
+
+1. Standardize
+2. Determinize
+3. Complete
+4. Minimize
+5. Read Word
+6. Select another
+Give the operation number: 4
+* Deterministic : True
+* Complete : True
+
+Partition P0 :
+  G0 = {0, 5}
+  G1 = {1, 2, 3, 4}
+Transitions between groups for P0 :
+  G0 (0, 5) : a -> G1 ; b -> G1
+  G1 (1, 2, 3, 4) : a -> G1 ; b -> G1
+
+Partition P1 :
+  G0 = {0}
+  G1 = {5}
+  G2 = {1, 2}
+  G3 = {3, 4}
+Transitions between groups for P1 :
+  G0 (0) : a -> G2 ; b -> G3
+  G1 (5) : a -> G1 ; b -> G1
+  G2 (1, 2) : a -> G2 ; b -> G3
+  G3 (3, 4) : a -> G1 ; b -> G1
+
+This CDFA was not minimal.
+Number of states before minimization : 6
+Number of states after minimization : 4
+
+===== Minimal automaton (MCDFA) =====
+Nb of symbols : 2
+Nb of States : 4
+1 Initial(s) state : ['0']
+2 Final(s) state : ['2', '3']
+
+State correspondence:
+  0 -> {0}
+  1 -> {5}
+  2 -> {1, 2}
+  3 -> {3, 4}
+
+Truth Table:
+    | State |    a |    b |    *
+--------------------------------
+->   |     0 |  [2] |  [3] |   []
+     |     1 |  [1] |  [1] |   []
+  <- |     2 |  [2] |  [3] |   []
+  <- |     3 |  [1] |  [1] |   []
+--------------------------------
+
+1. Standardize
+2. Determinize
+3. Complete
+4. Minimize
+5. Read Word
+6. Select another
+Give the operation number: 5
+Type a word to test (or 'end' to stop): aba
+No
+Type a word to test (or 'end' to stop): end
+
+1. Standardize
+2. Determinize
+3. Complete
+4. Minimize
+5. Read Word
+6. Select another
+Give the operation number: 6
+Below is the list of all automatas in the 'test_automata' directory
+1. test_fa01.txt
+2. test_fa02.txt
+3. test_fa03.txt
+4. test_fa04.txt
+5. test_fa05.txt
+6. test_fa06.txt
+7. test_fa07.txt
+8. test_fa08.txt
+9. test_fa09.txt
+10. test_fa10.txt
+11. test_fa11.txt
+12. test_fa12.txt
+13. test_fa13.txt
+14. test_fa14.txt
+15. test_fa15.txt
+16. test_fa16.txt
+17. test_fa17.txt
+18. test_fa18.txt
+19. test_fa19.txt
+20. test_fa20.txt
+21. test_fa21.txt
+22. test_fa22.txt
+23. test_fa23.txt
+24. test_fa24.txt
+25. test_fa25.txt
+26. test_fa26.txt
+27. test_fa27.txt
+28. test_fa28.txt
+29. test_fa29.txt
+30. test_fa30.txt
+31. test_fa31.txt
+32. test_fa32.txt
+33. test_fa33.txt
+34. test_fa34.txt
+35. test_fa35.txt
+36. test_fa36.txt
+37. test_fa37.txt
+38. test_fa38.txt
+39. test_fa39.txt
+40. test_fa40.txt
+41. test_fa41.txt
+42. test_fa42.txt
+43. test_fa43.txt
+44. test_fa44.txt
+Input your choice (n° of the automata)
+

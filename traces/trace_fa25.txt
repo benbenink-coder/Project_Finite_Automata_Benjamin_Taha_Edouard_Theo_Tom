@@ -1,0 +1,269 @@
+spawn python3 main.py
+Welcome to our Finite Automata Software. (press ctrl+c to quit)
+Below is the list of all automatas in the 'test_automata' directory
+1. test_fa01.txt
+2. test_fa02.txt
+3. test_fa03.txt
+4. test_fa04.txt
+5. test_fa05.txt
+6. test_fa06.txt
+7. test_fa07.txt
+8. test_fa08.txt
+9. test_fa09.txt
+10. test_fa10.txt
+11. test_fa11.txt
+12. test_fa12.txt
+13. test_fa13.txt
+25
+14. test_fa14.txt
+15. test_fa15.txt
+16. test_fa16.txt
+17. test_fa17.txt
+18. test_fa18.txt
+19. test_fa19.txt
+20. test_fa20.txt
+21. test_fa21.txt
+22. test_fa22.txt
+23. test_fa23.txt
+24. test_fa24.txt
+25. test_fa25.txt
+26. test_fa26.txt
+27. test_fa27.txt
+28. test_fa28.txt
+29. test_fa29.txt
+30. test_fa30.txt
+31. test_fa31.txt
+32. test_fa32.txt
+33. test_fa33.txt
+34. test_fa34.txt
+35. test_fa35.txt
+36. test_fa36.txt
+37. test_fa37.txt
+38. test_fa38.txt
+39. test_fa39.txt
+40. test_fa40.txt
+41. test_fa41.txt
+42. test_fa42.txt
+43. test_fa43.txt
+44. test_fa44.txt
+Input your choice (n° of the automata)
+
+You selected automaton : test_fa25.txt
+Nb of symbols : 4
+
+Nb of States : 5
+
+1 Initial(s) state : ['1']
+1 Final(s) state : ['0']
+Number of transitions : 14
+
+1a1
+
+1 a 1
+1a2
+
+1 a 2
+1b3
+
+1 b 3
+1c4
+
+1 c 4
+1d0
+
+1 d 0
+2b2
+
+2 b 2
+2b3
+
+2 b 3
+2c4
+
+2 c 4
+2d0
+
+2 d 0
+3c3
+
+3 c 3
+3c4
+
+3 c 4
+3d0
+
+3 d 0
+4d0
+
+4 d 0
+4d4
+
+4 d 4
+Below is the truth table of automaton test_fa25.txt
+
+Truth Table:
+    | State |    a |    b |    c |    d |    *
+----------------------------------------------
+  <- |     0 |   [] |   [] |   [] |   [] |   []
+->   |     1 | [1, 2] |  [3] |  [4] |  [0] |   []
+     |     2 |   [] | [2, 3] |  [4] |  [0] |   []
+     |     3 |   [] |   [] | [3, 4] |  [0] |   []
+     |     4 |   [] |   [] |   [] | [0, 4] |   []
+----------------------------------------------
+
+1. Standardize
+2. Determinize
+3. Complete
+4. Minimize
+5. Read Word
+6. Select another
+Give the operation number: 1
+
+Truth Table:
+    | State |    a |    b |    c |    d |    *
+----------------------------------------------
+  <- |     0 |   [] |   [] |   [] |   [] |   []
+     |     1 | [1, 2] |  [3] |  [4] |  [0] |   []
+     |     2 |   [] | [2, 3] |  [4] |  [0] |   []
+     |     3 |   [] |   [] | [3, 4] |  [0] |   []
+     |     4 |   [] |   [] |   [] | [0, 4] |   []
+->   |     5 | [1, 2] |  [3] |  [4] |  [0] |   []
+----------------------------------------------
+
+1. Standardize
+2. Determinize
+3. Complete
+4. Minimize
+5. Read Word
+6. Select another
+Give the operation number: 2
+* Deterministic : False
+
+The states will be renamed as follows for the determinized automaton :
+1 -> 0
+1.2 -> 1
+3 -> 2
+4 -> 3
+0 -> 4
+2.3 -> 5
+3.4 -> 6
+0.4 -> 7
+
+Truth Table:
+    | State |    a |    b |    c |    d |    *
+----------------------------------------------
+->   |     0 |  [1] |  [2] |  [3] |  [4] |   []
+     |     1 |  [1] |  [5] |  [3] |  [4] |   []
+     |     2 |   [] |   [] |  [6] |  [4] |   []
+     |     3 |   [] |   [] |   [] |  [7] |   []
+  <- |     4 |   [] |   [] |   [] |   [] |   []
+     |     5 |   [] |  [5] |  [6] |  [4] |   []
+     |     6 |   [] |   [] |  [6] |  [7] |   []
+  <- |     7 |   [] |   [] |   [] |  [7] |   []
+----------------------------------------------
+
+1. Standardize
+2. Determinize
+3. Complete
+4. Minimize
+5. Read Word
+6. Select another
+Give the operation number: 3
+* Complete : False
+Sucessfully completed FA !
+* Complete : True
+
+Truth Table:
+    | State |    a |    b |    c |    d |    *
+----------------------------------------------
+  <- |     0 |  [5] |  [5] |  [5] |  [5] |   []
+->   |     1 | [1, 2] |  [3] |  [4] |  [0] |   []
+     |     2 |  [5] | [2, 3] |  [4] |  [0] |   []
+     |     3 |  [5] |  [5] | [3, 4] |  [0] |   []
+     |     4 |  [5] |  [5] |  [5] | [0, 4] |   []
+     |     5 | [1, 2] |  [3] |  [4] |  [0] |   []
+     |     6 |  [5] |  [5] |  [5] |  [5] |   []
+----------------------------------------------
+
+1. Standardize
+2. Determinize
+3. Complete
+4. Minimize
+5. Read Word
+6. Select another
+Give the operation number: 4
+* Deterministic : False
+The automaton isn't deterministic, do you want to determinize it ? (y/n)5
+
+1. Standardize
+2. Determinize
+3. Complete
+4. Minimize
+5. Read Word
+6. Select another
+Give the operation number: aba
+Error: 'aba' is not a valid number. Please try again.
+
+1. Standardize
+2. Determinize
+3. Complete
+4. Minimize
+5. Read Word
+6. Select another
+Give the operation number: end
+6
+Error: 'end' is not a valid number. Please try again.
+
+1. Standardize
+2. Determinize
+3. Complete
+4. Minimize
+5. Read Word
+6. Select another
+Give the operation number: Below is the list of all automatas in the 'test_automata' directory
+1. test_fa01.txt
+2. test_fa02.txt
+3. test_fa03.txt
+4. test_fa04.txt
+5. test_fa05.txt
+6. test_fa06.txt
+7. test_fa07.txt
+8. test_fa08.txt
+9. test_fa09.txt
+10. test_fa10.txt
+11. test_fa11.txt
+12. test_fa12.txt
+13. test_fa13.txt
+14. test_fa14.txt
+15. test_fa15.txt
+16. test_fa16.txt
+17. test_fa17.txt
+18. test_fa18.txt
+19. test_fa19.txt
+20. test_fa20.txt
+21. test_fa21.txt
+22. test_fa22.txt
+23. test_fa23.txt
+24. test_fa24.txt
+25. test_fa25.txt
+26. test_fa26.txt
+27. test_fa27.txt
+28. test_fa28.txt
+29. test_fa29.txt
+30. test_fa30.txt
+31. test_fa31.txt
+32. test_fa32.txt
+33. test_fa33.txt
+34. test_fa34.txt
+35. test_fa35.txt
+36. test_fa36.txt
+37. test_fa37.txt
+38. test_fa38.txt
+39. test_fa39.txt
+40. test_fa40.txt
+41. test_fa41.txt
+42. test_fa42.txt
+43. test_fa43.txt
+44. test_fa44.txt
+Input your choice (n° of the automata)
+
