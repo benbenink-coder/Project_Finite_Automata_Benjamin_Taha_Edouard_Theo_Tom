@@ -129,7 +129,7 @@ def sls(arr):
 def determinize(nbSymbols, nbState, initialStates, finalStates, truthTable):
     newTruthTable = []
     toDo = []
-    fakeStatesToIndices = {}
+    indicesToName = []
 
     newInitialStates = [".".join(str(s) for s in sls(initialStates))]
     newFinalStates = []
@@ -137,23 +137,31 @@ def determinize(nbSymbols, nbState, initialStates, finalStates, truthTable):
     toDo.append(sls(initialStates))
 
     indice = 0
-    while (len(toDo)) > 0:
-        stateName, stateRow = merge_states(toDo[0], truthTable, nbSymbols, toDo, fakeStatesToIndices, initialStates, finalStates, newInitialStates, newFinalStates)
+    while indice < (len(toDo)):
+        stateName = ".".join(str(s) for s in toDo[indice])
+        indicesToName.append(stateName)
+
+        if any(str(e) in finalStates for e in toDo[indice]):
+            newFinalStates.append(str(indice))
+
+        stateRow = []
+
+        for i in range(int(nbSymbols)):
+            trans = [] 
+            for j in toDo[indice]:
+                trans.extend(truthTable[int(j)][i])
+
+            trans = sls(trans) #remove duplicates and sort it asc so [2,1,3] and [3,2,1] etc.. are considered same
+
+            if trans not in toDo:
+                toDo.append(trans)
+
+            target_index = toDo.index(trans)
+            stateRow.append(target_index)
+
         newTruthTable.append(stateRow)
-        fakeStatesToIndices[stateName] = indice
-        del toDo[0]
         indice +=1
-    print(fakeStatesToIndices)
-
-    for i in range(len(newInitialStates)):
-        newInitialStates[i] = str(fakeStatesToIndices[newInitialStates[i]])
-    
-    for i in range(len(newFinalStates)):
-        newFinalStates[i] = str(fakeStatesToIndices[newFinalStates[i]])
-
-    for i in range(len(newTruthTable)):
-        for j in range(nbSymbols):
-            newTruthTable[i][j] = str(fakeStatesToIndices[newTruthTable[i][j]])
+    print(indicesToName)
 
     printTruthTable(newTruthTable, newInitialStates, newFinalStates)
 
@@ -161,23 +169,6 @@ def determinize(nbSymbols, nbState, initialStates, finalStates, truthTable):
     initialStates = newInitialStates
     finalStates = newFinalStates
 
-
-def merge_states(statesToMerge, truthTable, nbSymbols, toDo, fakeStatesToIndices, initialStates, finalStates, newInitialStates, newFinalStates):
-    stateName = ".".join(str(s) for s in statesToMerge)
-
-    if (any(str(e) in finalStates for e in statesToMerge)):
-        newFinalStates.append(stateName)
-
-    stateRow = [[] for i in range(int(nbSymbols))]
-    for i in range(int(nbSymbols)):
-        trans = [] 
-        for j in statesToMerge:
-            trans.extend(truthTable[int(j)][i])
-        trans = sls(trans) #remove duplicates and sort it asc so [2,1,3] and [3,2,1] etc.. are considered same
-        stateRow[i] = ".".join(str(s) for s in trans)
-        if trans not in toDo and stateRow[i] not in fakeStatesToIndices.keys():
-            toDo.append(trans)
-    return stateName, stateRow
 
 
 #MINIMIZATION PART
