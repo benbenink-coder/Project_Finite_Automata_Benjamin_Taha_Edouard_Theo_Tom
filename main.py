@@ -37,7 +37,7 @@ def menu():
         printTruthTable(truthTable, initialStates, finalStates)
         while True:
             while True:
-                print("\n1. Standardize\n2. Determinize\n3. Complete\n4. Minimize\n5. Read Word\n6. Select another")
+                print("\n1. Standardize\n2. Determinize\n3. Complete\n4. Minimize\n5. Read Word\n6. Reset Truth Table\n7. Select another")
                 
                 choice_raw = input("Give the operation number: ")
 
@@ -52,57 +52,60 @@ def menu():
                 except ValueError:
                     print(f"Error: '{choice_raw}' is not a valid number. Please try again.")
             match opChoice:
+
                 case 1:
                     currentAutomata[-1], currentAutomata[2] = standardization_on_demand(truthTable, initialStates, finalStates)
+
                 case 2: 
                     if not is_deterministic(initialStates, truthTable):
-                        determinize(nbSymbols, nbState, initialStates, finalStates, truthTable)
+                        truthTable, initialStates, finalStates = determinize(nbSymbols, nbState, initialStates, finalStates, truthTable)
                     else:
-                        print("automaton already deterministic")
+                        print("Automaton already deterministic")
+
                 case 3:
                     is_complete(truthTable)
-                    completion(nbSymbols, nbState, truthTable)
+                    truthTable = completion(nbSymbols, nbState, truthTable)
                     is_complete(truthTable)
                     printTruthTable(truthTable, initialStates, finalStates)
-                case 4:
-                    workTruthTable = truthTable
-                    workInitialStates = initialStates
-                    workFinalStates = finalStates
 
-                    if not is_deterministic(workInitialStates, workTruthTable):
+                case 4:
+                    if not is_deterministic(initialStates, truthTable):
                         det = input("The automaton isn't deterministic, do you want to determinize it ? (y/n)")
-                        if det != "y":
-                            continue
-                        workTruthTable, workInitialStates, workFinalStates = determinize(
+                        if det == "y":
+                            truthTable, initialStates, finalStates = determinize(
                             nbSymbols,
-                            len(workTruthTable),
-                            workInitialStates,
-                            workFinalStates,
-                            workTruthTable,
+                            nbState,
+                            initialStates,
+                            finalStates,
+                            truthTable
                         )
 
-                    if not is_complete(workTruthTable):
+                    if not is_complete(truthTable):
                         comp = input("The automaton isn't complete, do you want to complete it ? (y/n)")
-                        if comp != "y":
-                            continue
-                        completion(nbSymbols, len(workTruthTable), workTruthTable)
-                        printTruthTable(workTruthTable, workInitialStates, workFinalStates)
+                        if comp == "y":
+                            truthTable = completion(nbSymbols, nbState, truthTable)
+                            printTruthTable(truthTable, initialStates, finalStates)
 
                     MCDFA = minimization(
                         nbSymbols,
-                        len(workTruthTable),
-                        workInitialStates,
-                        workFinalStates,
-                        workTruthTable,
+                        nbState,
+                        initialStates,
+                        finalStates,
+                        truthTable
                     )
-                    display_minimal_automaton(MCDFA, workInitialStates, workFinalStates)
+                    display_minimal_automaton(MCDFA, initialStates, finalStates)
+
                 case 5:
                     read_word(nbSymbols, nbState, initialStates, finalStates, truthTable)
                     r_comp = input("Do you want to check if it can be read for the complementary ? (y/n)")
                     if r_comp == "y":
                         nbSymbols, nbState, initialStates, compFinalStates, truthTable = complementary_automaton(nbSymbols, nbState, initialStates, finalStates, truthTable)
                         read_word_comp(nbSymbols, nbState, initialStates, compFinalStates, truthTable)
+
                 case 6:
+                    nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt("test_automata/" + automataList[choice - 1])
+
+                case 7:
                     break
 
 menu()

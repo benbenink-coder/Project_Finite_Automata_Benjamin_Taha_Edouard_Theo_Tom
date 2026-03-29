@@ -1,14 +1,13 @@
 
 
 def is_complete(truthTable):
-    is_comp = True
     for row in (truthTable):
         for trans in row[:-1]:  # Exclude the last column 
             if len(trans) == 0:
-                is_comp = False
-                break
-    print("* Complete : " + str(is_comp))
-    return is_comp
+                print("* Complete : False")
+                return False
+    print("* Complete : True")
+    return True
 
 def completion(nbSymbols, nbState, truthTable):
     needSink = False
@@ -23,3 +22,4 @@ def completion(nbSymbols, nbState, truthTable):
         sink_state.append([])
         truthTable.append(sink_state)
     print("Sucessfully completed FA !")
+    return truthTable

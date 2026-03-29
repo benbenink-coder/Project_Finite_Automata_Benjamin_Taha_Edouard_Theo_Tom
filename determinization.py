@@ -122,10 +122,6 @@ def determinize(nbSymbols, nbState, initialStates, finalStates, truthTable):
         print(f"{''.join(group)} -> {i}")
 
     printTruthTable(newTruthTable, newInitialStates, newFinalStates)
-
-    truthTable = newTruthTable
-    initialStates = newInitialStates
-    finalStates = newFinalStates
-    return truthTable, initialStates, finalStates
+    return newTruthTable, newInitialStates, newFinalStates
 
 

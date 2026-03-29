@@ -35,8 +35,10 @@ def standardization_on_demand(truthTable, initialStates, finalStates):
     Standardizes the automaton if necessary, and returns the truth table and the initial state after standardization.
     '''
     if not is_standard(truthTable, initialStates): #Check if the automaton is standardized
+        std = input("The automaton isn't standardized, do you want to standardize it ? (y/n)")
+        if std == "y":
             truthTable, initialStates = standardization(truthTable, initialStates)
             printTruthTable(truthTable, initialStates, finalStates) #Print the updated truth table
-            return truthTable, initialStates
+        return truthTable, initialStates
     print("The automata is already standardized!")
     return truthTable, initialStates
