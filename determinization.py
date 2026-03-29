@@ -54,9 +54,9 @@ def determinize(nbSymbols, nbState, initialStates, finalStates, truthTable):
         for i in range(nbState):
             eps_closure(nbSymbols, truthTable, i, epsCl)
 
-    print("\nEpsilon closures:")
-    for i, group in enumerate(epsCl):
-        print(f"  {i}' = {''.join(group)}")
+        print("\nEpsilon closures:")
+        for i, group in enumerate(epsCl):
+            print(f"  {i}' = {''.join(group)}")
     
     #combine all the inital states to one single
     start_state = []
