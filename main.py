@@ -1,6 +1,7 @@
 import os
 from queue import Empty
 import time
+import re
 
 
 def read_txt(filename):
@@ -18,17 +19,20 @@ def read_txt(filename):
         nbTransitions = f.readline() 
         print("Number of transitions : {}".format(nbTransitions))
         truthTable = [[[] for i in range(int(nbSymbols)+1)] for j in range(int(nbState))] ##last column is always *
-
         for x in f:
             print(x)
             stripped = x.strip()
             if stripped:  # Only process non-empty lines
-       
-                if x[1] == "*":
-                    truthTable[int(x[0])][-1].append(int(x[2]))
-                else:   
-  
-                  truthTable[int(x[0])][ord(x[1])-97].append(int(x[2]))  #truthTable[nodeA][transitionNumber(a = 0, z=26)] = nodeB
+                match = re.search(r"(\d+)([\*a-z])(\d+)", x) #This uses regular expressions to read the strings of transitions (as we could have 111111*222222 and we would still want our programm to work)
+                if match:
+                    first_num = match.group(1)
+                    separator = match.group(2)
+                    second_num = match.group(3)
+                if separator == "*":
+                    truthTable[int(first_num)][-1].append(int(second_num))
+                else:
+                    print(x[0], x[1], x[2])
+                    truthTable[int(first_num)][ord(separator)-97].append(int(second_num))  #truthTable[nodeA][transitionNumber(a = 0, z=26)] = nodeB
         return int(nbSymbols), int(nbState), initialStates, finalStates, truthTable
     
 def printTruthTable(truthTable, initialStates, finalStates):
@@ -73,24 +77,20 @@ def standardization(truthTable, initialStates):
     initialStates = str(len(truthTable)-1)
     return truthTable, initialStates
 
-def standardization_on_demand(truthTable, initialStates):
+def standardization_on_demand(truthTable, initialStates, finalStates):
     if not is_standard(truthTable, initialStates):
-        print("Do you want to standardize? Type 'yes' or 'no':")
-        if input().lower() == "yes":
             truthTable, initialStates = standardization(truthTable, initialStates)
-            printTruthTable(truthTable)
-            return truthTable, initialStates
-        else:
-            return truthTable, initialStates
+            printTruthTable(truthTable, initialStates, finalStates)
+            return truthTable, initialStates, 1
     print("The automata is already standardized!")
-    return truthTable, initialStates
+    return truthTable, initialStates, 0
 
 # COMPLETION PART
 
 def is_complete(truthTable):
     is_comp = True
     for row in (truthTable):
-        for trans in row:
+        for trans in row[:-1]:  # Exclude the last column 
             if len(trans) == 0:
                 is_comp = False
                 break
@@ -100,7 +100,7 @@ def is_complete(truthTable):
 def completion(nbSymbols, nbState, truthTable):
     needSink = False
     for i in range(nbState):
-        for j in range(nbSymbols):
+        for j in range(nbSymbols): 
             if len(truthTable[i][j]) == 0:
                 truthTable[i][j] = [nbState]
                 needSink = True
@@ -217,6 +217,7 @@ def determinize(nbSymbols, nbState, initialStates, finalStates, truthTable):
     truthTable = newTruthTable
     initialStates = newInitialStates
     finalStates = newFinalStates
+    return truthTable, initialStates, finalStates, 1
 
 
 
@@ -540,25 +541,70 @@ def menu():
         for i in range(len(automataList)):
             print("{}.".format(i+1), automataList[i])
             time.sleep(0.01)
-        choice = int(input("Input your choice (n° of the automata)\n\n"))
+        while True:
+            choiceAut = input("Input your choice (n° of the automata)\n\n")
+            try:
+                choice = int(choiceAut)
+                if 1 <= choice <= len(automataList):
+                    break  # Exit the loop, we have a valid choice!
+                else:
+                    print("Error: Please choose a number between 1 and {}.".format(len(automataList)))
+            except ValueError:
+                print(f"Error: '{choiceAut}' is not a valid number. Please try again.")
+
         print("You selected automaton : {}".format(automataList[choice-1]))
         nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt("test_automata/"+automataList[choice-1])
+        currentAutomata = [nbSymbols, nbState, initialStates, finalStates, truthTable]
         print("Below is the truth table of automaton {}".format(automataList[choice-1]))
         printTruthTable(truthTable, initialStates, finalStates)
         while True:
-            print("Here are the operation you can apply on the automaton : \n 1. Standardize \n 2. Determinize \n 3. Complete \n 4. Minimize \n 5. Read Word")
-            opChoice = int(input("Give the operation number you want to apply : "))
+            while True:
+                print("\n1. Standardize\n2. Determinize\n3. Complete\n4. Minimize\n5. Read Word\n6. Select another")
+                
+                choice_raw = input("Give the operation number: ")
+
+                try:
+                    opChoice = int(choice_raw)
+                    
+                    if 1 <= opChoice <= 6:
+                        break 
+                    else:
+                        print("Error: Please choose a number between 1 and 6.")
+                        
+                except ValueError:
+                    print(f"Error: '{choice_raw}' is not a valid number. Please try again.")
             match opChoice:
                 case 1:
-                    standardization(truthTable, initialStates)
+                    currentAutomata[-1], currentAutomata[2], stdrd = standardization_on_demand(truthTable, initialStates, finalStates)
+                    if stdrd:
+                        save = input("Do you want to save this automata ? (y/n)")
+                        if save == "y":
+                            saveAutomata(truthTable)
                 case 2: 
-                    determinize(nbSymbols, nbState, initialStates, finalStates, truthTable)
+                    if not is_deterministic(initialStates, truthTable):
+                        determinize(nbSymbols, nbState, initialStates, finalStates, truthTable)
+                        save = input("Do you want to save this automata ? (y/n)")
+                        if save == "y":
+                            saveAutomata(truthTable)
+                    else:
+                        print("automaton already deterministic")
                 case 3:
+                    is_complete(truthTable)
                     completion(nbSymbols, nbState, truthTable)
+                    is_complete(truthTable)
+                    printTruthTable(truthTable, initialStates, finalStates)
                 case 4:
-                    minimization(nbSymbols, nbState, initialStates, finalStates, truthTable)
+                    if is_deterministic(initialStates, truthTable):
+                        MCDFA = minimization(nbSymbols, len(truthTable), initialStates, finalStates, truthTable)
+                        display_minimal_automaton(MCDFA)
+                    else:
+                        print("Cannot minimize: automaton is not deterministic.")
                 case 5:
                     read_word(nbSymbols, nbState, initialStates, finalStates, truthTable)
+                case 6:
+                    break
 
 menu()
 read_word("test_automata/test_fa07.txt")
+
+#32; 33
