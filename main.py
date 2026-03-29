@@ -105,6 +105,10 @@ def menu():
                     display_minimal_automaton(MCDFA, workInitialStates, workFinalStates)
                 case 5:
                     read_word(nbSymbols, nbState, initialStates, finalStates, truthTable)
+                    r_comp = input("Do you want to check if it can be read for the complementary ? (y/n)")
+                    if r_comp == "y":
+                        compNbSymbols, compNbState, compInitialStates, compFinalStates, compTruthTable = complementary_automaton(nbSymbols, nbState, initialStates, finalStates, truthTable)
+                        read_word_comp(compNbSymbols, compNbState, compInitialStates, compFinalStates, compTruthTable)
                 case 6:
                     break
 
