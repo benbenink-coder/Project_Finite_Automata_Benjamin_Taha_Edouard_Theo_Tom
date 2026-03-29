@@ -106,6 +106,8 @@ def completion(nbSymbols, nbState, truthTable):
                 needSink = True
     if needSink:
         sink_state = [[nbState] for i in range(nbSymbols)]
+        # Keep the epsilon column to preserve the table shape used everywhere else.
+        sink_state.append([])
         truthTable.append(sink_state)
     print("Sucessfully completed FA !")
 
@@ -217,7 +219,7 @@ def determinize(nbSymbols, nbState, initialStates, finalStates, truthTable):
     truthTable = newTruthTable
     initialStates = newInitialStates
     finalStates = newFinalStates
-    return truthTable, initialStates, finalStates, 1
+    return truthTable, initialStates, finalStates
 
 
 
@@ -229,7 +231,7 @@ def normalize_truthTable_for_cdfa(truthTable):
 
     for row in truthTable:
         newRow = []
-        for trans in row:
+        for trans in row[:-1]:
             if len(trans) == 0:
                 raise ValueError("Minimization requires a complete automaton.")
             if len(trans) > 1:
@@ -392,6 +394,9 @@ def minimization(nbSymbols, nbState, initialStates, finalStates, truthTable, sta
             target = truthTable[rep][s][0]
             newRow.append([groups[target]])
 
+        # Keep the trailing column used by printTruthTable for the '*' header.
+        newRow.append([])
+
         minimalTruthTable.append(newRow)
 
     minimalInitialStates = [str(groups[int(initialStates[0])])]
@@ -416,7 +421,7 @@ def minimization(nbSymbols, nbState, initialStates, finalStates, truthTable, sta
     return nbSymbols, len(partition), minimalInitialStates, minimalFinalStates, minimalTruthTable, minimalStateContents
 
 
-def display_minimal_automaton(MCDFA):
+def display_minimal_automaton(MCDFA, initialStates, finalStates):
     nbSymbols, nbState, initialStates, finalStates, truthTable, contents = MCDFA
 
     print("\n===== Minimal automaton (MCDFA) =====")
@@ -430,7 +435,7 @@ def display_minimal_automaton(MCDFA):
     for i, group in enumerate(contents):
         print(f"  {i} -> {{{', '.join(group)}}}")
 
-    printTruthTable(truthTable)
+    printTruthTable(truthTable, initialStates, finalStates)
 
 # nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt("test_automata/test_fa05.txt")
 # printTruthTable(truthTable)
@@ -594,11 +599,37 @@ def menu():
                     is_complete(truthTable)
                     printTruthTable(truthTable, initialStates, finalStates)
                 case 4:
-                    if is_deterministic(initialStates, truthTable):
-                        MCDFA = minimization(nbSymbols, len(truthTable), initialStates, finalStates, truthTable)
-                        display_minimal_automaton(MCDFA)
-                    else:
-                        print("Cannot minimize: automaton is not deterministic.")
+                    workTruthTable = truthTable
+                    workInitialStates = initialStates
+                    workFinalStates = finalStates
+
+                    if not is_deterministic(workInitialStates, workTruthTable):
+                        det = input("The automaton isn't deterministic, do you want to determinize it ? (y/n)")
+                        if det != "y":
+                            continue
+                        workTruthTable, workInitialStates, workFinalStates = determinize(
+                            nbSymbols,
+                            len(workTruthTable),
+                            workInitialStates,
+                            workFinalStates,
+                            workTruthTable,
+                        )
+
+                    if not is_complete(workTruthTable):
+                        comp = input("The automaton isn't complete, do you want to complete it ? (y/n)")
+                        if comp != "y":
+                            continue
+                        completion(nbSymbols, len(workTruthTable), workTruthTable)
+                        printTruthTable(workTruthTable, workInitialStates, workFinalStates)
+
+                    MCDFA = minimization(
+                        nbSymbols,
+                        len(workTruthTable),
+                        workInitialStates,
+                        workFinalStates,
+                        workTruthTable,
+                    )
+                    display_minimal_automaton(MCDFA, workInitialStates, workFinalStates)
                 case 5:
                     read_word(nbSymbols, nbState, initialStates, finalStates, truthTable)
                 case 6:
