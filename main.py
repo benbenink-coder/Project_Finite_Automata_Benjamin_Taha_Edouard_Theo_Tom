@@ -581,16 +581,16 @@ def menu():
             match opChoice:
                 case 1:
                     currentAutomata[-1], currentAutomata[2], stdrd = standardization_on_demand(truthTable, initialStates, finalStates)
-                    if stdrd:
-                        save = input("Do you want to save this automata ? (y/n)")
-                        if save == "y":
-                            saveAutomata(truthTable)
+                    # if stdrd:
+                    #     save = input("Do you want to save this automata ? (y/n)")
+                    #     if save == "y":
+                    #         saveAutomata(truthTable)
                 case 2: 
                     if not is_deterministic(initialStates, truthTable):
                         determinize(nbSymbols, nbState, initialStates, finalStates, truthTable)
-                        save = input("Do you want to save this automata ? (y/n)")
-                        if save == "y":
-                            saveAutomata(truthTable)
+                        # save = input("Do you want to save this automata ? (y/n)")
+                        # if save == "y":
+                        #     saveAutomata(truthTable)
                     else:
                         print("automaton already deterministic")
                 case 3:
