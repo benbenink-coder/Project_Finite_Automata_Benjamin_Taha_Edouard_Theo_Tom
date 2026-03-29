@@ -45,7 +45,10 @@ def determinize(nbSymbols, nbState, initialStates, finalStates, truthTable):
         epsCl = ["" for i in range(nbState)]
         for i in range(nbState):
             eps_closure(nbSymbols, truthTable, i, epsCl)
-        print(epsCl) 
+
+    print("\nEpsilon closures:")
+    for i, group in enumerate(epsCl):
+        print(f"  {i}' = {''.join(group)}")
     
 
     start_state = []
@@ -60,8 +63,6 @@ def determinize(nbSymbols, nbState, initialStates, finalStates, truthTable):
     
     start_state = sls(start_state)
     toDo.append(start_state)
-
-    print(toDo)
 
     indice = 0
     while indice < (len(toDo)):
@@ -83,7 +84,6 @@ def determinize(nbSymbols, nbState, initialStates, finalStates, truthTable):
                 for t in trans:
                     eps_trans.extend([int(x) for x in epsCl[int(t)].split(".") if x != ""])
                 trans = sls(eps_trans)
-                print(trans)
             else:
                 trans = sls([int(x) for x in trans])
 
@@ -99,7 +99,11 @@ def determinize(nbSymbols, nbState, initialStates, finalStates, truthTable):
         stateRow.append([])
         newTruthTable.append(stateRow)
         indice +=1
-    print(indicesToName)
+
+    
+    print("\nThe states will be renamed as follows for the determinized automaton :")
+    for i, group in enumerate(indicesToName):
+        print(f"{''.join(group)} -> {i}")
 
     printTruthTable(newTruthTable, newInitialStates, newFinalStates)
 
