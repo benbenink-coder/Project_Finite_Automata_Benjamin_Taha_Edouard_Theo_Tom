@@ -37,14 +37,14 @@ def menu():
         printTruthTable(truthTable, initialStates, finalStates)
         while True:
             while True:
-                print("\n1. Standardize\n2. Determinize\n3. Complete\n4. Minimize\n5. Read Word\n6. Reset Truth Table\n7. Select another")
+                print("\n1. Print Truth Table\n2. Standardize\n3. Determinize\n4. Complete\n5. Minimize\n6. Read Word\n7. Reset Truth Table\n8. Select another")
                 
                 choice_raw = input("Give the operation number: ")
 
                 try:
                     opChoice = int(choice_raw)
                     
-                    if 1 <= opChoice <= 6:
+                    if 1 <= opChoice <= 8:
                         break 
                     else:
                         print("Error: Please choose a number between 1 and 6.")
@@ -52,23 +52,25 @@ def menu():
                 except ValueError:
                     print(f"Error: '{choice_raw}' is not a valid number. Please try again.")
             match opChoice:
-
                 case 1:
+                    printTruthTable(truthTable, initialStates, finalStates)
+
+                case 2:
                     currentAutomata[-1], currentAutomata[2] = standardization_on_demand(truthTable, initialStates, finalStates)
 
-                case 2: 
+                case 3:
                     if not is_deterministic(initialStates, truthTable):
                         truthTable, initialStates, finalStates = determinize(nbSymbols, nbState, initialStates, finalStates, truthTable)
                     else:
                         print("Automaton already deterministic")
 
-                case 3:
+                case 4:
                     is_complete(truthTable)
                     truthTable = completion(nbSymbols, nbState, truthTable)
                     is_complete(truthTable)
                     printTruthTable(truthTable, initialStates, finalStates)
 
-                case 4:
+                case 5:
                     if not is_deterministic(initialStates, truthTable):
                         det = input("The automaton isn't deterministic, do you want to determinize it ? (y/n)")
                         if det == "y":
@@ -95,17 +97,54 @@ def menu():
                     )
                     display_minimal_automaton(MCDFA, initialStates, finalStates)
 
-                case 5:
-                    read_word(nbSymbols, nbState, initialStates, finalStates, truthTable)
-                    r_comp = input("Do you want to check if it can be read for the complementary ? (y/n)")
-                    if r_comp == "y":
-                        nbSymbols, nbState, initialStates, compFinalStates, truthTable = complementary_automaton(nbSymbols, nbState, initialStates, finalStates, truthTable)
-                        read_word_comp(nbSymbols, nbState, initialStates, compFinalStates, truthTable)
-
                 case 6:
-                    nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt("test_automata/" + automataList[choice - 1])
+                    read_word(nbSymbols, nbState, initialStates, finalStates, truthTable)
+
+                    r_comp = input("Do you want to check if it can be read for the complementary ? (y/n) ")
+                    if r_comp == "y":
+                        workTruthTable = [row[:] for row in truthTable]
+                        workInitialStates = initialStates[:]
+                        workFinalStates = finalStates[:]
+                        workNbState = len(workTruthTable)
+
+                    # Determinize if needed
+                    if not is_deterministic(workInitialStates, workTruthTable):
+                        print("The automaton is not deterministic, determinization is required before complementary.")
+                        workTruthTable, workInitialStates, workFinalStates = determinize(
+                            nbSymbols,
+                            workNbState,
+                            workInitialStates,
+                            workFinalStates,
+                            workTruthTable
+                        )
+                        workNbState = len(workTruthTable)
+
+                        # Complete if needed
+                    if not is_complete(workTruthTable):
+                        print("The automaton is not complete, completion is required before complementary.")
+                        completion(nbSymbols, workNbState, workTruthTable)
+                        workNbState = len(workTruthTable)
+
+                    # Build complementary automaton
+                    nbSymbolsComp, nbStateComp, initialStatesComp, compFinalStates, truthTableComp = complementary_automaton(
+                        nbSymbols,
+                        workNbState,
+                        workInitialStates,
+                        workFinalStates,
+                        workTruthTable
+                    )
+
+                    read_word_comp(
+                        nbSymbolsComp,
+                        nbStateComp,
+                        initialStatesComp,
+                        compFinalStates,
+                        truthTableComp)
 
                 case 7:
+                    nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt("test_automata/" + automataList[choice - 1])
+
+                case 8:
                     break
 
 menu()
