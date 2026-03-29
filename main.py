@@ -78,22 +78,18 @@ def standardization(truthTable, initialStates):
 
 def standardization_on_demand(truthTable, initialStates, finalStates):
     if not is_standard(truthTable, initialStates):
-        print("Do you want to standardize? Type 'yes' or 'no':")
-        if input().lower() == "yes":
             truthTable, initialStates = standardization(truthTable, initialStates)
             printTruthTable(truthTable, initialStates, finalStates)
-            return truthTable, initialStates
-        else:
-            return truthTable, initialStates
+            return truthTable, initialStates, 1
     print("The automata is already standardized!")
-    return truthTable, initialStates
+    return truthTable, initialStates, 0
 
 # COMPLETION PART
 
 def is_complete(truthTable):
     is_comp = True
     for row in (truthTable):
-        for trans in row:
+        for trans in row[:-1]:  # Exclude the last column 
             if len(trans) == 0:
                 is_comp = False
                 break
@@ -103,7 +99,7 @@ def is_complete(truthTable):
 def completion(nbSymbols, nbState, truthTable):
     needSink = False
     for i in range(nbState):
-        for j in range(nbSymbols):
+        for j in range(nbSymbols): 
             if len(truthTable[i][j]) == 0:
                 truthTable[i][j] = [nbState]
                 needSink = True
@@ -172,6 +168,7 @@ def determinize(nbSymbols, nbState, initialStates, finalStates, truthTable):
     truthTable = newTruthTable
     initialStates = newInitialStates
     finalStates = newFinalStates
+    return truthTable, initialStates, finalStates, 1
 
 
 
@@ -508,6 +505,7 @@ def menu():
 
         print("You selected automaton : {}".format(automataList[choice-1]))
         nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt("test_automata/"+automataList[choice-1])
+        currentAutomata = [nbSymbols, nbState, initialStates, finalStates, truthTable]
         print("Below is the truth table of automaton {}".format(automataList[choice-1]))
         printTruthTable(truthTable, initialStates, finalStates)
         while True:
@@ -528,9 +526,19 @@ def menu():
                     print(f"Error: '{choice_raw}' is not a valid number. Please try again.")
             match opChoice:
                 case 1:
-                    standardization_on_demand(truthTable, initialStates, finalStates)
+                    currentAutomata[-1], currentAutomata[2], stdrd = standardization_on_demand(truthTable, initialStates, finalStates)
+                    if stdrd:
+                        save = input("Do you want to save this automata ? (y/n)")
+                        if save == "y":
+                            saveAutomata(truthTable)
                 case 2: 
-                    determinize(nbSymbols, nbState, initialStates, finalStates, truthTable)
+                    if not is_deterministic(initialStates, truthTable):
+                        determinize(nbSymbols, nbState, initialStates, finalStates, truthTable)
+                        save = input("Do you want to save this automata ? (y/n)")
+                        if save == "y":
+                            saveAutomata(truthTable)
+                    else:
+                        print("automaton already deterministic")
                 case 3:
                     is_complete(truthTable)
                     completion(nbSymbols, nbState, truthTable)
