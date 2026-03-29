@@ -76,12 +76,12 @@ def standardization(truthTable, initialStates):
     initialStates = str(len(truthTable)-1)
     return truthTable, initialStates
 
-def standardization_on_demand(truthTable, initialStates):
+def standardization_on_demand(truthTable, initialStates, finalStates):
     if not is_standard(truthTable, initialStates):
         print("Do you want to standardize? Type 'yes' or 'no':")
         if input().lower() == "yes":
             truthTable, initialStates = standardization(truthTable, initialStates)
-            printTruthTable(truthTable)
+            printTruthTable(truthTable, initialStates, finalStates)
             return truthTable, initialStates
         else:
             return truthTable, initialStates
@@ -495,17 +495,40 @@ def menu():
         for i in range(len(automataList)):
             print("{}.".format(i+1), automataList[i])
             time.sleep(0.01)
-        choice = int(input("Input your choice (n° of the automata)\n\n"))
+        while True:
+            choiceAut = input("Input your choice (n° of the automata)\n\n")
+            try:
+                choice = int(choiceAut)
+                if 1 <= choice <= len(automataList):
+                    break  # Exit the loop, we have a valid choice!
+                else:
+                    print("Error: Please choose a number between 1 and {}.".format(len(automataList)))
+            except ValueError:
+                print(f"Error: '{choiceAut}' is not a valid number. Please try again.")
+
         print("You selected automaton : {}".format(automataList[choice-1]))
         nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt("test_automata/"+automataList[choice-1])
         print("Below is the truth table of automaton {}".format(automataList[choice-1]))
         printTruthTable(truthTable, initialStates, finalStates)
         while True:
-            print("Here are the operation you can apply on the automaton : \n 1. Standardize \n 2. Determinize \n 3. Complete \n 4. Minimize \n 5. Read Word \n 6. Select another automaton")
-            opChoice = int(input("Give the operation number you want to apply : "))
+            while True:
+                print("\n1. Standardize\n2. Determinize\n3. Complete\n4. Minimize\n5. Read Word\n6. Select another")
+                
+                choice_raw = input("Give the operation number: ")
+
+                try:
+                    opChoice = int(choice_raw)
+                    
+                    if 1 <= opChoice <= 6:
+                        break 
+                    else:
+                        print("Error: Please choose a number between 1 and 6.")
+                        
+                except ValueError:
+                    print(f"Error: '{choice_raw}' is not a valid number. Please try again.")
             match opChoice:
                 case 1:
-                    standardization_on_demand(truthTable, initialStates)
+                    standardization_on_demand(truthTable, initialStates, finalStates)
                 case 2: 
                     determinize(nbSymbols, nbState, initialStates, finalStates, truthTable)
                 case 3:
