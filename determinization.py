@@ -6,10 +6,12 @@ def is_deterministic(initialStates, truthTable):
         is_det = False
     else:   
         for row in (truthTable):
-            for trans in row:
+            for trans in row[:-1]:
                 if len(trans) > 1:
                     is_det = False
                     break
+            if len(row[-1]) > 0:
+                    is_det = False
     print("* Deterministic : " + str(is_det))
     return is_det
 
