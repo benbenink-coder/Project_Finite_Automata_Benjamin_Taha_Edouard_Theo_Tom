@@ -63,58 +63,84 @@ def read_word(nbSymbols, nbState, initialStates, finalStates, truthTable):
 
 
 
-def complementary_automaton(A):
-    # Read the automaton from file A
-    nbSymbols, nbState, initialStates, finalStates, truthTable = read_txt(A)
-
-    # Build the new final states:
-    # all non-final states become final
+def complementary_automaton(nbSymbols, nbState, initialStates, finalStates, truthTable):
+    # Create the list of final states for the complementary automaton
+    # Every state that was not final becomes final
     compFinalStates = []
 
     for state in range(nbState):
         if str(state) not in finalStates:
             compFinalStates.append(str(state))
 
-    # Return the complementary automaton
+    # Return all data of the complementary automaton
+    # Same alphabet, same number of states, same initial states, same transitions
+    # Only the final states are changed
     return nbSymbols, nbState, initialStates, compFinalStates, truthTable
 
 
-def recognize_word_comp(word, A):
-    # Read the complementary automaton
-    nbSymbols, nbState, initialStates, finalStates, truthTable = complementary_automaton(A)
+def recognize_word_comp(word, nbSymbols, nbState, initialStates, compFinalStates, truthTable):
+    # Store all possible current states
+    # We use a list because the automaton may be non-deterministic
+    current_states = []
 
-    # Start at the initial state
-    current_state = int(initialStates[0])
+    # Add the initial states to the current states list
+    # They are strings in the file, so we convert them to integers
+    for state in initialStates:
+        current_states.append(int(state))
 
-    # Read the word letter by letter
+    # Read the word letter by letter after it has been fully entered by the user
     for letter in word:
-        # Convert a letter into a column number
+        # Convert the letter into the correct column number in the truth table
+        # a -> 0, b -> 1, c -> 2, ...
         column = ord(letter) - 97
 
-        # If the letter is not in the alphabet, reject
+        # If the letter does not belong to the automaton alphabet, reject the word
         if column < 0 or column >= nbSymbols:
             return False
 
-        # If no transition exists, reject
-        if len(truthTable[current_state][column]) == 0:
+        # This list will contain all states reachable after reading the current letter
+        next_states = []
+
+        # For each current possible state
+        for state in current_states:
+            # Look at all transitions possible with the current letter
+            for dest in truthTable[state][column]:
+                # Avoid duplicates in the list of next states
+                if dest not in next_states:
+                    next_states.append(dest)
+
+        # If no transition is possible, reject the word
+        if len(next_states) == 0:
             return False
 
-        # Move to the next state
-        current_state = truthTable[current_state][column][0]
+        # Update the list of current states
+        current_states = next_states
 
-    # At the end, check if the state is final in the complementary automaton
-    return str(current_state) in finalStates
+    # After reading the whole word, check if at least one reachable state
+    # is a final state in the complementary automaton
+    for state in current_states:
+        if str(state) in compFinalStates:
+            return True
+
+    # Otherwise, reject the word
+    return False
 
 
-def read_word_comp(A):
+def read_word_comp(nbSymbols, nbState, initialStates, compFinalStates, truthTable):
+    # Tell the user that the words are tested on the complementary automaton
     print("The complementary automaton is built from A.")
 
+    # Ask the user to type a full word
+    # "end" is used to stop the loop
     word = input("Type a word to test on the complementary automaton (or 'end' to stop): ")
 
+    # Continue until the user types "end"
     while word != "end":
-        if recognize_word_comp(word, A):
+        # Test if the complementary automaton recognizes the word
+        if recognize_word_comp(word, nbSymbols, nbState, initialStates, compFinalStates, truthTable):
             print("Yes")
         else:
             print("No")
 
+        # Ask for another word
         word = input("Type a word to test on the complementary automaton (or 'end' to stop): ")
