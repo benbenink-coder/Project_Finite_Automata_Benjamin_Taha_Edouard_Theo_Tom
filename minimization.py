@@ -49,20 +49,20 @@ def keep_only_reachable_states(nbSymbols, initialStates, finalStates, truthTable
 
     oldToNew = {old: new for new, old in enumerate(reachable)} #It builds a mapping to renumber states after removing unreachable ones.
  #rebuilds the transition table after removing unreachable states. It remaps everything from the old indexing to a new compact indexing.
-    newTruthTable = []
-    for oldState in reachable:
-        newRow = []
-        for s in range(nbSymbols):
-            newRow.append([oldToNew[truthTable[oldState][s][0]]])
-        newTruthTable.append(newRow)
+ newTruthTable = []  
+# new clean transition table (only reachable states, reindexed properly)
+for oldState in reachable:   # loop over each reachable state these are the only ones we keep
+    newRow = []   # this will store all transitions for this state one per symbol
+    for s in range(nbSymbols):  # loop over each symbol in the alphabet like a, b, 0, 1, etc
+        newRow.append([oldToNew[truthTable[oldState][s][0]]])  newRow.append([oldToNew[truthTable[oldState][s][0]]]) # take the next state from old table, convert it to new index, and add it as this symbol’s transition
+    newTruthTable.append(newRow)  # once all symbols are handled, add this row to the new table
 
-    newInitialStates = [str(oldToNew[int(initialStates[0])])]
-
-    newFinalStates = []
-    for f in finalStates:
-        f = int(f)
-        if f in oldToNew:
-            newFinalStates.append(str(oldToNew[f]))
+   newInitialStates = [str(oldToNew[int(initialStates[0])])]  # take old initial state, convert to int, map to new index, turn back to string, store as list
+newFinalStates = []  # will store final states after remapping
+for f in finalStates:    # loop through each old final state
+    f = int(f)    # convert from string to int to match indices
+     if f in oldToNew:   # only keep it if it's reachable (exists in mapping)
+        newFinalStates.append(str(oldToNew[f]))    # convert old final state to new index, turn to string, add to list
 
     newStateNames = [stateNames[s] for s in reachable]
 
