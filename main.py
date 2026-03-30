@@ -56,7 +56,7 @@ def menu():
                     printTruthTable(truthTable, initialStates, finalStates)
 
                 case 2: #Standardize
-                    currentAutomata[-1], currentAutomata[2] = standardization_on_demand(truthTable, initialStates, finalStates)
+                    currentAutomata[-1], currentAutomata[2] = standardization_on_demand(truthTable, initialStates, finalStates) #Changes the truthTable and the initialStates, only attributes that change for standardization
 
                 case 3: #Determinize
                     if not is_deterministic(initialStates, truthTable):
