@@ -1,46 +1,45 @@
 from read import * 
-def normalize_truthTable_for_cdfa(truthTable):
-    # Convert temporary sink (-1) into real sink index and enforce determinism
+def normalize_truthTable_for_cdfa(truthTable):     # force the transition table into the exact form expected by minimization
     normalizedTruthTable = []
-    sinkIndex = len(truthTable) - 1
+    sinkIndex = len(truthTable) - 1 # Take the index of the last state in the automaton and call it the sink state
 
     for row in truthTable:
-        newRow = []
-        for trans in row[:-1]:
-            if len(trans) == 0:
+        newRow = [] #to rebuild the row instead of modifying
+        for trans in row[:-1]: #take everything except the last element
+            if len(trans) == 0: #each transition must exist 
                 raise ValueError("Minimization requires a complete automaton.")
-            if len(trans) > 1:
+            if len(trans) > 1: #A deterministic automaton must have exactly one target per symbol
                 raise ValueError("Minimization requires a deterministic automaton.")
 
-            target = trans[0]
-            if target == -1:
+            target = trans[0] #after the check There is exactly one element, so index 0 exists and is the only one.
+            if target == -1: #as -1 means no transition defined you take that target and input it as sink index,This ensures the automaton becomes complete by redirecting to a sink (dead) state
                 target = sinkIndex
 
-            newRow.append([target])
-        normalizedTruthTable.append(newRow)
+            newRow.append([target]) #store normalised transition
+        normalizedTruthTable.append(newRow) #add cleaned row to new table
 
     return normalizedTruthTable
 
 
 def reachable_states(initialStates, truthTable):
     # Classic DFS to keep only useful states
-    if len(initialStates) != 1:
+    if len(initialStates) != 1: #checks if at least one state exists
         raise ValueError("Minimization requires one initial state.")
-
-    start = int(initialStates[0])
-    visited = set([start])
-    stack = [start]
+    #this is to explore the automaton
+    start = int(initialStates[0]) 
+    visited = set([start]) #set of visited states so we don't revisit it
+    stack = [start] #initialize staack with starting state
 
     while stack:
         current = stack.pop()
 
         for trans in truthTable[current]:
             nxt = trans[0]
-            if nxt not in visited:
+            if nxt not in visited: #prevents revisiting states
                 visited.add(nxt)
                 stack.append(nxt)
 
-    return sorted(list(visited))
+    return sorted(list(visited)) #converts into a sorted list
 
 
 def keep_only_reachable_states(nbSymbols, initialStates, finalStates, truthTable, stateNames):
@@ -48,8 +47,8 @@ def keep_only_reachable_states(nbSymbols, initialStates, finalStates, truthTable
     truthTable = normalize_truthTable_for_cdfa(truthTable)
     reachable = reachable_states(initialStates, truthTable)
 
-    oldToNew = {old: new for new, old in enumerate(reachable)}
-
+    oldToNew = {old: new for new, old in enumerate(reachable)} #It builds a mapping to renumber states after removing unreachable ones.
+ #rebuilds the transition table after removing unreachable states. It remaps everything from the old indexing to a new compact indexing.
     newTruthTable = []
     for oldState in reachable:
         newRow = []
