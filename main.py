@@ -60,13 +60,13 @@ def menu():
 
                 case 3: #Determinize
                     if not is_deterministic(initialStates, truthTable):
-                        truthTable, initialStates, finalStates = determinize(nbSymbols, nbState, initialStates, finalStates, truthTable)
+                        truthTable, initialStates, finalStates = determinize(nbSymbols, initialStates, finalStates, truthTable)
                     else:
                         print("Automaton already deterministic")
 
                 case 4: #Complete
                     is_complete(truthTable)
-                    truthTable = completion(nbSymbols, nbState, truthTable)
+                    truthTable = completion(nbSymbols, truthTable)
                     is_complete(truthTable)
                     printTruthTable(truthTable, initialStates, finalStates)
 
@@ -76,7 +76,6 @@ def menu():
                         if det == "y":
                             truthTable, initialStates, finalStates = determinize(
                             nbSymbols,
-                            nbState,
                             initialStates,
                             finalStates,
                             truthTable
@@ -85,12 +84,11 @@ def menu():
                     if not is_complete(truthTable):
                         comp = input("The automaton isn't complete, do you want to complete it ? (y/n)")
                         if comp == "y":
-                            truthTable = completion(nbSymbols, nbState, truthTable)
+                            truthTable = completion(nbSymbols, truthTable)
                             printTruthTable(truthTable, initialStates, finalStates)
 
                     MCDFA = minimization(
                         nbSymbols,
-                        nbState,
                         initialStates,
                         finalStates,
                         truthTable
@@ -118,7 +116,6 @@ def menu():
                         print("The automaton is not deterministic, determinization is required before complementary.")
                         workTruthTable, workInitialStates, workFinalStates = determinize(
                             nbSymbols,
-                            workNbState,
                             workInitialStates,
                             workFinalStates,
                             workTruthTable
@@ -130,7 +127,7 @@ def menu():
                         # The complementary automaton also requires the automaton to be complete
                     if not is_complete(workTruthTable):
                         print("The automaton is not complete, completion is required before complementary.")
-                        completion(nbSymbols, workNbState, workTruthTable)
+                        workTruthTable = completion(nbSymbols, workTruthTable)
                         # Update the number of states after completion
                         workNbState = len(workTruthTable)
 

@@ -9,10 +9,12 @@ def is_complete(truthTable):
     print("* Complete : True")
     return True
 
-def completion(nbSymbols, nbState, truthTable):
+def completion(nbSymbols, truthTable):
+    nbState = len(truthTable)
     needSink = False
     for i in range(nbState):
         for j in range(nbSymbols): 
+
             if len(truthTable[i][j]) == 0:
                 truthTable[i][j] = [nbState] #the sink state is located at the end of the array
                 needSink = True

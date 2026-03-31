@@ -37,7 +37,8 @@ def eps_closure(nbSymbols, truthTable, indice, epsCl):
 #determinizes the automaton
 # It creates a new truth table from scratch, and returns it with new state names.
 # To keep track on how they were called before merging, we use indicesToName, which is displayed
-def determinize(nbSymbols, nbState, initialStates, finalStates, truthTable):
+def determinize(nbSymbols, initialStates, finalStates, truthTable):
+    nbState = len(truthTable)
     newTruthTable = []
     toDo = []
     indicesToName = []#used to display the new names of the combined states
