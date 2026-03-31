@@ -64,61 +64,61 @@ for f in finalStates:    # loop through each old final state
      if f in oldToNew:   # only keep it if it's reachable (exists in mapping)
         newFinalStates.append(str(oldToNew[f]))    # convert old final state to new index, turn to string, add to list
 
-    newStateNames = [stateNames[s] for s in reachable]
+    newStateNames = [stateNames[s] for s in reachable] #new state names are the ones that are reachable
 
-    return len(reachable), newInitialStates, newFinalStates, newTruthTable, newStateNames
+    return len(reachable), newInitialStates, newFinalStates, newTruthTable, newStateNames #returns cleaned automaton
 
 
 def state_to_group(partition):
-    # Map each state to its group index
-    return {state: i for i, group in enumerate(partition) for state in group}
+    return {state: i for i, group in enumerate(partition) for state in group} #link each state to it's group
 
 
-def display_partition(partition, stateNames, k):
+def display_partition(partition, stateNames, k): #display's partitions in this manner Partition P1 :G0 = {q0, q2}  G1 = {q1, q3}
     print(f"\nPartition P{k} :")
     for i, group in enumerate(partition):
-        print(f"  G{i} = {{{', '.join(stateNames[s] for s in group)}}}")
+        print(f"  G{i} = {{{', '.join(stateNames[s] for s in group)}}}") 
 
 
 def display_group_transitions(partition, nbSymbols, truthTable, stateNames, k):
     # Show transitions between groups instead of states
     print(f"Transitions between groups for P{k} :")
-    groups = state_to_group(partition)
+    groups = state_to_group(partition) #builds dictionary linking state to group
 
-    for i, group in enumerate(partition):
+    for i, group in enumerate(partition): #loops over groups
         rep = group[0]  # representative
         transitions = []
 
-        for s in range(nbSymbols):
-            target = truthTable[rep][s][0]
-            transitions.append(f"{chr(97+s)} -> G{groups[target]}")
+        for s in range(nbSymbols): # loops over symbols
+            target = truthTable[rep][s][0] #gets next state
+            transitions.append(f"{chr(97+s)} -> G{groups[target]}") #convert to group transition i.e 0 → 'a' then gets group of state i.e a -> G1
 
-        print(f"  G{i} ({', '.join(stateNames[s] for s in group)}) : {' ; '.join(transitions)}")
+        print(f"  G{i} ({', '.join(stateNames[s] for s in group)}) : {' ; '.join(transitions)}") #prints outputs like this G0 (q0, q2) : a -> G1 ; b -> G0 
 
 
 def refine_partition(partition, nbSymbols, truthTable):
     # Split groups based on transition signatures
-    groups = state_to_group(partition)
+    groups = state_to_group(partition) #turns state into group level
     newPartition = []
-    changed = False
+    changed = False #if not changed minimization is complete thats how we stop loop
 
+   # For each current group, it checks whether all states in that group have the same transition behavior. If they do, the group stays as it is.If they do not, the group is split into smaller groups.
     for group in partition:
-        buckets = {}
+        buckets = {} #Create an empty dictionary that will classify states by their signature.
 
         for state in group:
-            signature = tuple(groups[truthTable[state][s][0]] for s in range(nbSymbols))
-            buckets.setdefault(signature, []).append(state)
+            signature = tuple(groups[truthTable[state][s][0]] for s in range(nbSymbols)) #For the current state, build its signature:for each symbol s look where the state goes then convert that destination state into its group number
+            buckets.setdefault(signature, []).append(state) #This puts the state into the bucket matching its signature.
 
-        split = list(buckets.values())
-        newPartition.extend(split)
+        split = list(buckets.values()) #Take only the grouped states from the dictionary.
+        newPartition.extend(split) #Add those new groups into the global new partition.
 
-        if len(split) > 1:
+        if len(split) > 1: #If the old group became more than one subgroup, then a split happened.
             changed = True
 
     return newPartition, changed
 
 
-def minimization(nbSymbols, nbState, initialStates, finalStates, truthTable, stateNames=None):
+def minimization(nbSymbols, nbState, initialStates, finalStates, truthTable, stateNames=None): #final boss that uses everything
     # Default naming if none provided
     if stateNames is None:
         stateNames = [str(i) for i in range(nbState)]
@@ -128,12 +128,13 @@ def minimization(nbSymbols, nbState, initialStates, finalStates, truthTable, sta
         nbSymbols, initialStates, finalStates, truthTable, stateNames
     )
 
-    finalSet = set(int(f) for f in finalStates)
+    finalSet = set(int(f) for f in finalStates) #convert into int for proper code working
 
     # Initial partition: non-final vs final
-    nonFinal = [s for s in range(nbState) if s not in finalSet]
-    final = [s for s in range(nbState) if s in finalSet]
-
+    nonFinal = [s for s in range(nbState) if s not in finalSet] #Loop over all states: 0 → nbState-1 Keep only those NOT in finalSet
+    final = [s for s in range(nbState) if s in finalSet] #kep only those in finalset
+    
+#Final states and non-final states are never equivalent So they must be separated from the start.
     partition = []
     if nonFinal:
         partition.append(nonFinal)
@@ -144,7 +145,7 @@ def minimization(nbSymbols, nbState, initialStates, finalStates, truthTable, sta
     display_partition(partition, stateNames, k)
     display_group_transitions(partition, nbSymbols, truthTable, stateNames, k)
 
-    # Refinement loop
+    # Refinement loop Two states stay in the same group only if they behave identically for every symbol
     while True:
         newPartition, changed = refine_partition(partition, nbSymbols, truthTable)
         if not changed:
@@ -204,7 +205,7 @@ def display_minimal_automaton(MCDFA, initialStates, finalStates):
     print(f"{len(initialStates)} Initial(s) state :", initialStates)
     print(f"{len(finalStates)} Final(s) state :", finalStates)
 
-    # Required mapping table (important for grading)
+    # Required mapping table 
     print("\nState correspondence:")
     for i, group in enumerate(contents):
         print(f"  {i} -> {{{', '.join(group)}}}")
