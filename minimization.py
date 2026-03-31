@@ -54,9 +54,8 @@ def keep_only_reachable_states(nbSymbols, initialStates, finalStates, truthTable
     for oldState in reachable:   # loop over each reachable state these are the only ones we keep
         newRow = []   # this will store all transitions for this state one per symbol
         for s in range(nbSymbols):  # loop over each symbol in the alphabet like a, b, 0, 1, etc
-            newRow.append([oldToNew[truthTable[oldState][s][0]]])  
-            newRow.append([oldToNew[truthTable[oldState][s][0]]]) # take the next state from old table, convert it to new index, and add it as this symbol’s transition
-            newTruthTable.append(newRow)  # once all symbols are handled, add this row to the new table
+            newRow.append([oldToNew[truthTable[oldState][s][0]]])  # take the next state from old table, convert it to new index, and add it as this symbol’s transition
+        newTruthTable.append(newRow)  # once all symbols are handled, add this row to the new table
 
     newInitialStates = [str(oldToNew[int(initialStates[0])])]  # take old initial state, convert to int, map to new index, turn back to string, store as list
     newFinalStates = []  # will store final states after remapping
@@ -65,9 +64,9 @@ def keep_only_reachable_states(nbSymbols, initialStates, finalStates, truthTable
         if f in oldToNew:   # only keep it if it's reachable (exists in mapping)
             newFinalStates.append(str(oldToNew[f]))    # convert old final state to new index, turn to string, add to list
 
-        newStateNames = [stateNames[s] for s in reachable] #new state names are the ones that are reachable
+    newStateNames = [stateNames[s] for s in reachable] #new state names are the ones that are reachable
 
-        return len(reachable), newInitialStates, newFinalStates, newTruthTable, newStateNames #returns cleaned automaton
+    return len(reachable), newInitialStates, newFinalStates, newTruthTable, newStateNames #returns cleaned automaton
 
 
 def state_to_group(partition):
